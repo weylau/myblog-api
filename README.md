@@ -11,6 +11,7 @@ $ go get github.com/kardianos/govendor
 $ mkdir -p $GOPATH/src/github.com/weylau/myblog-api && cd "$_"
 $ govendor init
 $ govendor fetch github.com/gin-gonic/gin@v1.3
+$ govendor fetch github.com/go-sql-driver/mysql@v1.4.0
 ```
 4、main.go
 复制模板
