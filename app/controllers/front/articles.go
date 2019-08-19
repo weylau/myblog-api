@@ -21,7 +21,7 @@ func GetList(c *gin.Context) {
 		page_size = 10
 	}
 	article_model := model.Articles{}
-	article_list, err := article_model.GetList(page, page_size)
+	article_list, err := article_model.GetList(page, page_size, []string{"article_id", "cate_id", "title", "description", "modify_time"})
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -55,6 +55,20 @@
 			"revisionTime": "2019-08-05T18:00:45Z"
 		},
 		{
+			"checksumSHA1": "7PNL0WPSWAV0RgtXDVnMtu3uMjo=",
+			"path": "github.com/jinzhu/gorm",
+			"revision": "b7156195f7f3415f97c20abbd6aff894b847fee8",
+			"revisionTime": "2019-05-08T07:12:19Z",
+			"version": "v1.9.8",
+			"versionExact": "v1.9.8"
+		},
+		{
+			"checksumSHA1": "iqeSAF7imnVsW+iqLqf6kkYn1VU=",
+			"path": "github.com/jinzhu/inflection",
+			"revision": "f5c5f50e6090ae76a29240b61ae2a90dd810112e",
+			"revisionTime": "2019-06-03T04:28:36Z"
+		},
+		{
 			"checksumSHA1": "4DgEcOv2o9NyZAHCbdS76mToqpU=",
 			"path": "github.com/json-iterator/go",
 			"revision": "27518f6661eba504be5a7a9a9f6d9460d892ade3",
