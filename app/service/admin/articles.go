@@ -1,0 +1,81 @@
+package admin
+
+import (
+	"github.com/weylau/myblog-api/app/db"
+	"github.com/weylau/myblog-api/app/model"
+	"github.com/weylau/myblog-api/app/protocol"
+	"time"
+)
+
+type ArticleParams struct {
+	CateId      int    `json:"cate_id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Keywords    string `json:"keywords"`
+	ImgPath     string `json:"img_path"`
+	OpId        int    `json:"op_id"`
+	OpUser      string `json:"op_user"`
+	Contents    string `json:"contents"`
+	ShowType    int    `json:"show_type"`
+}
+
+type Articles struct {
+}
+
+/**
+获取文章详情
+*/
+func (Articles) Add(params *ArticleParams) (resp *protocol.Resp) {
+	resp = &protocol.Resp{Ret: -1, Msg: "", Data: ""}
+	articles := model.Articles{
+		CateId:      params.CateId,
+		Title:       params.Title,
+		Description: params.Description,
+		Keywords:    params.Keywords,
+		ImgPath:     params.ImgPath,
+		OpId:        params.OpId,
+		OpUser:      params.OpUser,
+		ModifyTime:  time.Now().Format("2006-01-02 15:04:05"),
+		CreateTime:  time.Now().Format("2006-01-02 15:04:05"),
+	}
+
+	if articles.GetCateName() == "" {
+		resp.Msg = "文章类型错误"
+		return resp
+	}
+
+	articles_contents := model.ArticlesContents{
+		ShowType: params.ShowType,
+		Contents: params.Contents,
+	}
+	if articles_contents.GetShowTypeName() == "" {
+		resp.Msg = "文章内容显示类型错误"
+		return resp
+	}
+	//添加articles_contents
+	db := db.DBConn()
+	defer db.Close()
+	// 开始事务
+	tx := db.Begin()
+	//添加articles
+	err := db.Model(model.Articles{}).Create(&articles).Error
+	if err != nil {
+		resp.Msg = "系统错误：" + err.Error()
+		tx.Rollback()
+		return resp
+	}
+	//获取插入记录的Id
+	var article_id []int
+	db.Raw("select LAST_INSERT_ID() as id").Pluck("article_id", &article_id)
+	articles_contents.ArticleId = article_id[0]
+	err = db.Create(&articles_contents).Error
+	if err != nil {
+		resp.Msg = "系统错误：" + err.Error()
+		tx.Rollback()
+		return resp
+	}
+	//提交事务
+	tx.Commit()
+	resp.Ret = 0
+	return resp
+}

@@ -27,10 +27,10 @@ func (Articles) GetList(c *gin.Context) {
 	if err != nil {
 		resp.Ret = -1
 		resp.Msg = "系统错误"
-		goto END
+		c.JSON(http.StatusOK, resp)
+		return
 	}
 	resp.Data = article_list
-END:
 	c.JSON(http.StatusOK, resp)
 }
 
@@ -42,10 +42,10 @@ func (Articles) GetDetail(c *gin.Context) {
 	if err != nil || id <= 0 {
 		resp.Ret = -1
 		resp.Msg = "参数错误"
-		goto END
+		c.JSON(http.StatusOK, resp)
+		return
 	}
 	resp.Data = article_serv.GetArticleDetail(id)
 
-END:
 	c.JSON(http.StatusOK, resp)
 }

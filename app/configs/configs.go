@@ -10,3 +10,5 @@ const DBUser = "root"
 const DBPass = "123456"
 const DBName = "myblog"
 const DBDebug = true
+
+//定义文章类型

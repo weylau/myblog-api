@@ -61,3 +61,5 @@ insert into `myblog`.`mb_articles_contents`(article_id, contents) value (2,'测�
 insert into `myblog`.`mb_articles_contents`(article_id, contents) value (3,'测试文章03');
 
 insert into `myblog`.`mb_admins` (username,password,status) value ('admin', '',1)
+
+alter table `myblog`.`mb_articles_contents` ADD COLUMN `show_type` tinyint(2) NOT NULL DEFAULT 0 COMMENT '内容展示类型：1-html、2-markdown' AFTER `article_id`;

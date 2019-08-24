@@ -18,10 +18,10 @@ func (Login) Login(c *gin.Context) {
 	if username == "" || password == "" {
 		resp.Ret = -1
 		resp.Msg = "用户名或密码不能为空"
-		goto END
+		c.JSON(http.StatusOK, resp)
+		return
 	}
 
 	resp = admin_serv.Login(username, password)
-END:
 	c.JSON(http.StatusOK, resp)
 }

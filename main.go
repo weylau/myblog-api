@@ -24,7 +24,9 @@ func setupRouter() *gin.Engine {
 
 	//后台管理
 	login_admin_ctrl := admin.Login{}
+	article_admin_ctrl := admin.Articles{}
 	r.POST("/adapi/login", login_admin_ctrl.Login)
+	r.POST("/adapi/articles/add", article_admin_ctrl.Add)
 	return r
 }
 
