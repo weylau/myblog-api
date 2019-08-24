@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/weylau/myblog-api/app/controllers/admin"
 	"github.com/weylau/myblog-api/app/controllers/front"
 	"net/http"
 	"strings"
@@ -16,17 +17,21 @@ func setupRouter() *gin.Engine {
 	r := gin.Default()
 	r.Use(Cors())
 
+	article_front_ctrl := front.Articles{}
 	//文章相关
-	r.GET("/article/list", front.GetList)
-	r.GET("/article/detail", front.GetDetail)
+	r.GET("/article/list", article_front_ctrl.GetList)
+	r.GET("/article/detail", article_front_ctrl.GetDetail)
 
+	//后台管理
+	login_admin_ctrl := admin.Login{}
+	r.POST("/adapi/login", login_admin_ctrl.Login)
 	return r
 }
 
 func main() {
 	r := setupRouter()
 	// Listen and Server in 0.0.0.0:8080
-	r.Run("172.30.52.120:8080")
+	r.Run("0.0.0.0:8080")
 }
 
 func Cors() gin.HandlerFunc {

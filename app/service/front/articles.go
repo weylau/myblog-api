@@ -1,4 +1,4 @@
-package service
+package front
 
 import (
 	"github.com/weylau/myblog-api/app/db"
@@ -10,10 +10,13 @@ type ArticleDetails struct {
 	Contents string `json:"contents"`
 }
 
+type Articles struct {
+}
+
 /**
  *分页获取文章列表
  */
-func GetList(page int, page_size int, fields []string) ([]model.Articles, error) {
+func (Articles) GetList(page int, page_size int, fields []string) ([]model.Articles, error) {
 	db := db.DBConn()
 	defer db.Close()
 	offset := (page - 1) * page_size
@@ -25,7 +28,7 @@ func GetList(page int, page_size int, fields []string) ([]model.Articles, error)
 /**
 获取文章详情
 */
-func GetArticleDetail(article_id int) *ArticleDetails {
+func (Articles) GetArticleDetail(article_id int) *ArticleDetails {
 	article_content := model.ArticlesContents{}
 	article_details := ArticleDetails{}
 	db := db.DBConn()

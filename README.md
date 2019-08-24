@@ -13,6 +13,7 @@ $ govendor init
 $ govendor fetch github.com/gin-gonic/gin@v1.3
 $ govendor fetch github.com/go-sql-driver/mysql@v1.4.0
 $ govendor fetch github.com/jinzhu/gorm@v1.9.8
+$ govendor fetch github.com/dgrijalva/jwt-go@v3.2.0
 ```
 4、main.go
 复制模板
