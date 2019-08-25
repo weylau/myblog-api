@@ -22,25 +22,23 @@ func (Articles) Add(c *gin.Context) {
 		return
 	}
 	params.CateId = cate_id
-
 	params.Title = c.DefaultPostForm("title", "")
 	params.Description = c.DefaultPostForm("description", "")
 	params.Keywords = c.DefaultPostForm("keywords", "")
 	params.Contents = c.DefaultPostForm("contents", "")
 	params.ImgPath = c.DefaultPostForm("img_path", "")
 	show_type, err := strconv.Atoi(c.DefaultPostForm("show_type", "0"))
+	admin_id, _ := c.Get("admin_id")
+	username, _ := c.Get("username")
+	aop_id, _ := strconv.Atoi(admin_id.(string))
+	params.OpId = aop_id
+	params.OpUser = username.(string)
 	if err != nil {
 		resp.Msg = "系统错误:" + err.Error()
 		c.JSON(http.StatusOK, resp)
 		return
 	}
 	params.ShowType = show_type
-	if err != nil {
-		resp.Msg = "系统错误:" + err.Error()
-		c.JSON(http.StatusOK, resp)
-		return
-	}
-
 	article_serv := admin.Articles{}
 	resp = article_serv.Add(params)
 	c.JSON(http.StatusOK, resp)

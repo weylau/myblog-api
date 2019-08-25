@@ -44,7 +44,7 @@ func (Admins) Login(username string, password string) (resp protocol.Resp) {
 	}
 
 	//生成token
-	token, err := helper.JwtEncode(jwt.MapClaims{"admin_id": admin.AdminId, "username": admin.Username, "expr_time": time.Now().Unix()}, []byte(configs.JwtSecret))
+	token, err := helper.JwtEncode(jwt.MapClaims{"admin_id": fmt.Sprintf("%d", admin.AdminId), "username": admin.Username, "expr_time": fmt.Sprintf("%d", time.Now().Unix())}, []byte(configs.JwtSecret))
 	if err != nil {
 		resp.Ret = -999
 		resp.Msg = "系统错误:" + err.Error()

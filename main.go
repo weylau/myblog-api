@@ -5,15 +5,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/weylau/myblog-api/app/controllers/admin"
 	"github.com/weylau/myblog-api/app/controllers/front"
+	"github.com/weylau/myblog-api/app/middleware"
 	"net/http"
 	"strings"
 )
 
-var db = make(map[string]string)
-
 func setupRouter() *gin.Engine {
-	// Disable Console Color
-	// gin.DisableConsoleColor()
 	r := gin.Default()
 	r.Use(Cors())
 
@@ -26,13 +23,17 @@ func setupRouter() *gin.Engine {
 	login_admin_ctrl := admin.Login{}
 	article_admin_ctrl := admin.Articles{}
 	r.POST("/adapi/login", login_admin_ctrl.Login)
-	r.POST("/adapi/articles/add", article_admin_ctrl.Add)
+	authorized := r.Group("/adapi")
+	authorized.Use(middleware.Auth{}.CheckAuth())
+	{
+		authorized.POST("/articles/add", article_admin_ctrl.Add)
+	}
+
 	return r
 }
 
 func main() {
 	r := setupRouter()
-	// Listen and Server in 0.0.0.0:8080
 	r.Run("0.0.0.0:8080")
 }
 
@@ -68,6 +69,6 @@ func Cors() gin.HandlerFunc {
 			c.JSON(http.StatusOK, "Options Request!")
 		}
 		// 处理请求
-		c.Next() //  处理请求
+		c.Next()
 	}
 }

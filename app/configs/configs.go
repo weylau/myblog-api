@@ -1,6 +1,7 @@
 package configs
 
 const JwtSecret = "123456" //jwt加密key
+const JwtExprTime = 86400  //jwt加密key
 
 //数据库
 const DBDriver = "mysql"
