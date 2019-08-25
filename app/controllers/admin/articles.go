@@ -17,7 +17,7 @@ func (Articles) Add(c *gin.Context) {
 	params := &admin.ArticleParams{}
 	cate_id, err := strconv.Atoi(c.DefaultPostForm("cate_id", "0"))
 	if err != nil {
-		resp.Msg = "系统错误:" + err.Error()
+		resp.Msg = "参数错误:" + err.Error()
 		c.JSON(http.StatusOK, resp)
 		return
 	}
@@ -28,16 +28,17 @@ func (Articles) Add(c *gin.Context) {
 	params.Contents = c.DefaultPostForm("contents", "")
 	params.ImgPath = c.DefaultPostForm("img_path", "")
 	show_type, err := strconv.Atoi(c.DefaultPostForm("show_type", "0"))
+	if err != nil {
+		resp.Msg = "参数错误:" + err.Error()
+		c.JSON(http.StatusOK, resp)
+		return
+	}
 	admin_id, _ := c.Get("admin_id")
 	username, _ := c.Get("username")
 	aop_id, _ := strconv.Atoi(admin_id.(string))
 	params.OpId = aop_id
 	params.OpUser = username.(string)
-	if err != nil {
-		resp.Msg = "系统错误:" + err.Error()
-		c.JSON(http.StatusOK, resp)
-		return
-	}
+
 	params.ShowType = show_type
 	article_serv := admin.Articles{}
 	resp = article_serv.Add(params)
