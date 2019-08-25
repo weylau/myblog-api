@@ -8,6 +8,7 @@ import (
 type ArticleDetails struct {
 	model.Articles
 	Contents string `json:"contents"`
+	ShowType int    `json:"show_type"`
 }
 
 type Articles struct {
@@ -36,5 +37,6 @@ func (Articles) GetArticleDetail(article_id int) *ArticleDetails {
 	db.Where("article_id = ?", article_id).First(&article_details)
 	db.Where("article_id = ?", article_id).First(&article_content)
 	article_details.Contents = article_content.Contents
+	article_details.ShowType = article_content.ShowType
 	return &article_details
 }
