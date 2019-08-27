@@ -7,6 +7,8 @@ import (
 	"github.com/weylau/myblog-api/app/controllers/admin"
 	"github.com/weylau/myblog-api/app/controllers/front"
 	"github.com/weylau/myblog-api/app/middleware"
+	"github.com/weylau/myblog-api/app/protocol"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -46,8 +48,17 @@ func setupRouter() *gin.Engine {
 	{
 		authorized.POST("/articles/add", article_admin_ctrl.Add)
 	}
+	//404
+	r.NoRoute(resp404)
 
 	return r
+}
+
+//404
+func resp404(c *gin.Context) {
+	resp := protocol.Resp{Ret: 404, Msg: "page not exists!", Data: ""}
+	//返回404状态码
+	c.JSON(http.StatusNotFound, resp)
 }
 
 func main() {
