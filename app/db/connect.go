@@ -8,11 +8,11 @@ import (
 
 func DBConn() (db *gorm.DB) {
 
-	db, err := gorm.Open(configs.DBDriver, configs.DBUser+":"+configs.DBPass+"@tcp("+configs.DBHost+":"+configs.DBPort+")/"+configs.DBName)
+	db, err := gorm.Open(configs.Configs.DBDriver, configs.Configs.DBUser+":"+configs.Configs.DBPass+"@tcp("+configs.Configs.DBHost+":"+configs.Configs.DBPort+")/"+configs.Configs.DBName)
 	if err != nil {
 		panic(err.Error())
 	}
-	if configs.DBDebug {
+	if configs.Configs.DBDebug {
 		db = db.Debug()
 	}
 	return db

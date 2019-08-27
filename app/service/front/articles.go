@@ -40,3 +40,14 @@ func (Articles) GetArticleDetail(article_id int) *ArticleDetails {
 	article_details.ShowType = article_content.ShowType
 	return &article_details
 }
+
+/**
+获取文章类型
+*/
+func (Articles) GetArticleCate() []model.Articles {
+	article_cates := make([]model.Articles, 0)
+	db := db.DBConn()
+	defer db.Close()
+	db.Order("orderby asc").Find(&article_cates)
+	return article_cates
+}

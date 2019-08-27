@@ -1,13 +1,32 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/weylau/myblog-api/app/configs"
 	"github.com/weylau/myblog-api/app/controllers/admin"
 	"github.com/weylau/myblog-api/app/controllers/front"
 	"github.com/weylau/myblog-api/app/middleware"
+	"os"
+	"os/exec"
+	"path/filepath"
 )
 
+func init() {
+	var err error
+	appDir, err := os.Getwd()
+	if err != nil {
+		file, _ := exec.LookPath(os.Args[0])
+		applicationPath, _ := filepath.Abs(file)
+		appDir, _ = filepath.Split(applicationPath)
+	}
+	configs.SetUp(appDir + "/config.ini")
+}
+
 func setupRouter() *gin.Engine {
+	if configs.Configs.Env == "prd" {
+		gin.SetMode(gin.ReleaseMode)
+	}
 	r := gin.Default()
 	auth_middleware := middleware.Auth{}
 	r.Use(auth_middleware.Cors())
@@ -16,6 +35,7 @@ func setupRouter() *gin.Engine {
 	//文章相关
 	r.GET("/article/list", article_front_ctrl.GetList)
 	r.GET("/article/detail", article_front_ctrl.GetDetail)
+	r.GET("/article/cate", article_front_ctrl.GetCate)
 
 	//后台管理
 	login_admin_ctrl := admin.Login{}
@@ -32,5 +52,10 @@ func setupRouter() *gin.Engine {
 
 func main() {
 	r := setupRouter()
-	r.Run("0.0.0.0:8080")
+
+	err := r.Run("0.0.0.0:" + configs.Configs.HttpListenPort)
+	if err != nil {
+		fmt.Println("http服务启动失败")
+		os.Exit(0)
+	}
 }

@@ -23,9 +23,13 @@ func (this Articles) GetCateName() string {
 	case 1:
 		cate_name = "php"
 	case 2:
-		cate_name = "golang"
-	case 3:
 		cate_name = "mysql"
+	case 3:
+		cate_name = "golang"
+	case 4:
+		cate_name = "linux"
+	case 5:
+		cate_name = "其他"
 	default:
 		cate_name = ""
 	}

@@ -1,15 +1,35 @@
 package configs
 
-const JwtSecret = "123456" //jwt加密key
-const JwtExprTime = 86400  //jwt加密key
+import "gopkg.in/ini.v1"
 
-//数据库
-const DBDriver = "mysql"
-const DBHost = "172.16.57.110"
-const DBPort = "3306"
-const DBUser = "root"
-const DBPass = "123456"
-const DBName = "myblog"
-const DBDebug = true
+type SysConfig struct {
+	Env            string `ini:"env"`
+	DBDriver       string `ini:"db_driver"`
+	DBHost         string `ini:"db_host"`
+	DBPort         string `ini:"db_port"`
+	DBUser         string `ini:"db_user"`
+	DBPass         string `ini:"db_pass"`
+	DBName         string `ini:"db_name"`
+	DBDebug        bool   `ini:"db_debug"`
+	HttpListenPort string `ini:"http_listen_port"`
+	JwtSecret      string `ini:"jwt_secret"`
+	JwtExprTime    int64  `ini:"jwt_expr_time"`
+	LogDir         string `ini:"log_dir"`
+}
 
-//定义文章类型
+var Configs *SysConfig = &SysConfig{}
+
+//加载系统配置文件
+func SetUp(configFileName string) {
+	config := &SysConfig{}
+	conf, err := ini.Load(configFileName) //加载配置文件
+	if err != nil {
+		panic(err)
+	}
+	conf.BlockMode = false
+	err = conf.MapTo(&config) //解析成结构体
+	if err != nil {
+		panic(err)
+	}
+	Configs = config
+}

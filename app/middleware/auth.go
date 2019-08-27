@@ -38,7 +38,7 @@ func (Auth) CheckAuth() gin.HandlerFunc {
 		token := kv[1]
 		fmt.Println("token:", token)
 		helper := helpers.Helpers{}
-		auth_info, err := helper.JwtDncode(token, []byte(configs.JwtSecret))
+		auth_info, err := helper.JwtDncode(token, []byte(configs.Configs.JwtSecret))
 		if err != nil {
 			resp.Ret = 603
 			resp.Msg = "登录失败，请重新登录" + err.Error()
@@ -67,7 +67,7 @@ func (Auth) CheckAuth() gin.HandlerFunc {
 			return
 		}
 
-		if curent_time-auth_time > configs.JwtExprTime {
+		if curent_time-auth_time > configs.Configs.JwtExprTime {
 			resp.Ret = 607
 			resp.Msg = "登录失效，请重新登录"
 			c.JSON(http.StatusOK, resp)

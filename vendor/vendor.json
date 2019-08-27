@@ -107,6 +107,10 @@
 			"revisionTime": "2019-08-12T10:43:08Z"
 		},
 		{
+			"path": "golang.org/x/sys",
+			"revision": ""
+		},
+		{
 			"path": "golang.org/x/sys/unix",
 			"revision": ""
 		},
@@ -119,6 +123,12 @@
 			"path": "gopkg.in/go-playground/validator.v8",
 			"revision": "5f1438d3fca68893a817e4a66806cea46a9e4ebf",
 			"revisionTime": "2017-07-30T05:02:35Z"
+		},
+		{
+			"checksumSHA1": "jR7qCBN2pPJptK/At+m+p593RTU=",
+			"path": "gopkg.in/ini.v1",
+			"revision": "d4cae42d398bc0095297fc3315669590d29166ea",
+			"revisionTime": "2019-08-05T06:45:50Z"
 		},
 		{
 			"checksumSHA1": "QqDq2x8XOU7IoOR98Cx1eiV5QY8=",
