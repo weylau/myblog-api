@@ -17,11 +17,14 @@ type Articles struct {
 /**
  *分页获取文章列表
  */
-func (Articles) GetList(page int, page_size int, fields []string) ([]model.Articles, error) {
+func (Articles) GetList(page int, page_size int, cate_id int, fields []string) ([]model.Articles, error) {
 	db := db.DBConn()
 	defer db.Close()
 	offset := (page - 1) * page_size
 	articles := make([]model.Articles, 0)
+	if cate_id > 0 {
+		db = db.Where("cate_id = ?", cate_id)
+	}
 	db.Select(fields).Offset(offset).Limit(page_size).Order("article_id desc").Find(&articles)
 	return articles, nil
 }
@@ -44,8 +47,8 @@ func (Articles) GetArticleDetail(article_id int) *ArticleDetails {
 /**
 获取文章类型
 */
-func (Articles) GetArticleCate() []model.Articles {
-	article_cates := make([]model.Articles, 0)
+func (Articles) GetArticleCate() []model.ArticlesCate {
+	article_cates := make([]model.ArticlesCate, 0)
 	db := db.DBConn()
 	defer db.Close()
 	db.Order("orderby asc").Find(&article_cates)

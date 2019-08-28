@@ -22,8 +22,12 @@ func (Articles) GetList(c *gin.Context) {
 	if err != nil {
 		page_size = 10
 	}
+	cate_id, err := strconv.Atoi(c.DefaultQuery("cate_id", "0"))
+	if err != nil {
+		cate_id = 0
+	}
 	article_serv := front.Articles{}
-	article_list, err := article_serv.GetList(page, page_size, []string{"article_id", "cate_id", "title", "description", "modify_time"})
+	article_list, err := article_serv.GetList(page, page_size, cate_id, []string{"article_id", "cate_id", "title", "description", "modify_time"})
 	if err != nil {
 		resp.Ret = -1
 		resp.Msg = "系统错误"
@@ -38,6 +42,7 @@ func (Articles) GetList(c *gin.Context) {
 func (Articles) GetDetail(c *gin.Context) {
 	resp := protocol.Resp{Ret: 0, Msg: "", Data: ""}
 	id, err := strconv.Atoi(c.DefaultQuery("id", "0"))
+
 	article_serv := front.Articles{}
 	if err != nil || id <= 0 {
 		resp.Ret = -1
