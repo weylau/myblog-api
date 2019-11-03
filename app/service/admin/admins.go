@@ -20,9 +20,21 @@ type UserInfo struct {
 	Token    string `json:"token"`
 }
 
-func (Admins) Login(username string, password string) (resp protocol.Resp) {
+func (Admins) Login(username string, password string, code uint32) (resp protocol.Resp) {
 	resp = protocol.Resp{Ret: -1, Msg: "", Data: ""}
 	helper := helpers.Helpers{}
+
+	//校验谷歌验证码
+	ga_code, err := helper.MkGaCode(configs.Configs.GaSecret)
+	if err != nil {
+		resp.Msg = "系统错误"
+		return resp
+	}
+
+	if code != ga_code {
+		resp.Msg = "谷歌验证码错误"
+		return resp
+	}
 
 	db := db.DBConn()
 	defer db.Close()

@@ -22,6 +22,7 @@ func init() {
 		applicationPath, _ := filepath.Abs(file)
 		appDir, _ = filepath.Split(applicationPath)
 	}
+	fmt.Println(appDir)
 	configs.SetUp(appDir + "/config.ini")
 }
 
@@ -42,11 +43,14 @@ func setupRouter() *gin.Engine {
 	//后台管理
 	login_admin_ctrl := admin.Login{}
 	article_admin_ctrl := admin.Articles{}
+	user_admin_ctrl := admin.User{}
 	r.POST("/adapi/login", login_admin_ctrl.Login)
 	authorized := r.Group("/adapi")
 	authorized.Use(auth_middleware.CheckAuth())
 	{
-		authorized.POST("/articles/add", article_admin_ctrl.Add)
+		authorized.POST("/article/add", article_admin_ctrl.Add)
+		authorized.GET("/article/list", article_admin_ctrl.GetList)
+		authorized.GET("/user/info", user_admin_ctrl.Info)
 	}
 	//404
 	r.NoRoute(resp404)

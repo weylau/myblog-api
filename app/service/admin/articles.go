@@ -17,9 +17,15 @@ type ArticleParams struct {
 	OpUser      string `json:"op_user"`
 	Contents    string `json:"contents"`
 	ShowType    int    `json:"show_type"`
+	PublishTime string `json:"publish_time"`
 }
 
 type Articles struct {
+}
+
+type ArticleList struct {
+	Total    int              `json:"total"`
+	Datalist []model.Articles `json:"datalist"`
 }
 
 /**
@@ -35,23 +41,18 @@ func (Articles) Add(params *ArticleParams) (resp *protocol.Resp) {
 		ImgPath:     params.ImgPath,
 		OpId:        params.OpId,
 		OpUser:      params.OpUser,
-		ModifyTime:  time.Now().Format("2006-01-02 15:04:05"),
+		ModifyTime:  params.PublishTime,
 		CreateTime:  time.Now().Format("2006-01-02 15:04:05"),
-	}
-
-	if articles.GetCateName() == "" {
-		resp.Msg = "文章类型错误"
-		return resp
 	}
 
 	articles_contents := model.ArticlesContents{
 		ShowType: params.ShowType,
 		Contents: params.Contents,
 	}
-	if articles_contents.GetShowTypeName() == "" {
-		resp.Msg = "文章内容显示类型错误"
-		return resp
-	}
+	//if articles_contents.GetShowTypeName() == "" {
+	//	resp.Msg = "文章内容显示类型错误"
+	//	return resp
+	//}
 	//添加articles_contents
 	db := db.DBConn()
 	defer db.Close()
@@ -78,4 +79,24 @@ func (Articles) Add(params *ArticleParams) (resp *protocol.Resp) {
 	tx.Commit()
 	resp.Ret = 0
 	return resp
+}
+
+/**
+ *分页获取文章列表
+ */
+func (Articles) GetList(page int, page_size int, cate_id int, fields []string) (*ArticleList, error) {
+	db := db.DBConn()
+	defer db.Close()
+	offset := (page - 1) * page_size
+	article_list := &ArticleList{}
+	articles := make([]model.Articles, 0)
+	total := 0
+	if cate_id > 0 {
+		db = db.Where("cate_id = ?", cate_id)
+	}
+	db.Model(&model.Articles{}).Count(&total)
+	db.Select(fields).Offset(offset).Limit(page_size).Order("article_id desc").Find(&articles)
+	article_list.Datalist = articles
+	article_list.Total = total
+	return article_list, nil
 }

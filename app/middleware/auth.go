@@ -36,7 +36,6 @@ func (Auth) CheckAuth() gin.HandlerFunc {
 			return
 		}
 		token := kv[1]
-		fmt.Println("token:", token)
 		helper := helpers.Helpers{}
 		auth_info, err := helper.JwtDncode(token, []byte(configs.Configs.JwtSecret))
 		if err != nil {
@@ -46,7 +45,6 @@ func (Auth) CheckAuth() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		fmt.Println("auth_info:", auth_info)
 		curent_time := time.Now().Unix()
 		admin_id := helper.Interface2String(auth_info["admin_id"])
 		username := helper.Interface2String(auth_info["username"])
@@ -96,11 +94,11 @@ func (Auth) Cors() gin.HandlerFunc {
 			headerStr = "access-control-allow-origin, access-control-allow-headers"
 		}
 		if origin != "" {
-			c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+			//c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 			c.Header("Access-Control-Allow-Origin", "*")                                       // 这是允许访问所有域
 			c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE,UPDATE") //服务器支持的所有跨域请求的方法,为了避免浏览次请求的多次'预检'请求
 			//  header的类型
-			c.Header("Access-Control-Allow-Headers", "Authorization, Content-Length, X-CSRF-Token, Token,session,X_Requested_With,Accept, Origin, Host, Connection, Accept-Encoding, Accept-Language,DNT, X-CustomHeader, Keep-Alive, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Pragma")
+			c.Header("Access-Control-Allow-Headers", "Authorization, Content-Length, X-CSRF-Token, Token,session,X_Requested_With,Accept, Origin, Host, Connection, Accept-Encoding, Accept-Language,DNT, X-CustomHeader, Keep-Alive, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Pragma,x-token")
 			//              允许跨域设置                                                                                                      可以返回其他子段
 			c.Header("Access-Control-Expose-Headers", "Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers,Cache-Control,Content-Language,Content-Type,Expires,Last-Modified,Pragma,FooBar") // 跨域关键设置 让浏览器可以解析
 			c.Header("Access-Control-Max-Age", "172800")                                                                                                                                                           // 缓存请求信息 单位为秒
@@ -110,7 +108,9 @@ func (Auth) Cors() gin.HandlerFunc {
 
 		//放行所有OPTIONS方法
 		if method == "OPTIONS" {
-			c.JSON(http.StatusOK, "Options Request!")
+			c.Status(204)
+			c.Abort()
+			return
 		}
 		// 处理请求
 		c.Next()

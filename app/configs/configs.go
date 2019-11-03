@@ -15,6 +15,7 @@ type SysConfig struct {
 	JwtSecret      string `ini:"jwt_secret"`
 	JwtExprTime    int64  `ini:"jwt_expr_time"`
 	LogDir         string `ini:"log_dir"`
+	GaSecret       string `ini:"ga_secret"`
 }
 
 var Configs *SysConfig = &SysConfig{}
