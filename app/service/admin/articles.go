@@ -100,3 +100,15 @@ func (Articles) GetList(page int, page_size int, cate_id int, fields []string) (
 	article_list.Total = total
 	return article_list, nil
 }
+
+/**
+ *删除文章
+ */
+func (Articles) Delete(article_id int) (bool, error) {
+	db := db.DBConn()
+	defer db.Close()
+	if err := db.Where("article_id = ?", article_id).Delete(&model.Articles{}).Error; err != nil {
+		return false, err
+	}
+	return true, nil
+}

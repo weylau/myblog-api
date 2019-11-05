@@ -112,3 +112,23 @@ func (Articles) GetList(c *gin.Context) {
 	resp.Data = article_list
 	c.JSON(http.StatusOK, resp)
 }
+
+func (Articles) Delete(c *gin.Context) {
+	resp := protocol.Resp{Ret: 0, Msg: "", Data: ""}
+	article_id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		resp.Ret = -1
+		resp.Msg = "参数错误"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	article_serv := admin.Articles{}
+	res, _ := article_serv.Delete(article_id)
+	if !res {
+		resp.Ret = -1
+		resp.Msg = "删除失败"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	c.JSON(http.StatusOK, resp)
+}
