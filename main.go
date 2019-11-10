@@ -22,7 +22,6 @@ func init() {
 		applicationPath, _ := filepath.Abs(file)
 		appDir, _ = filepath.Split(applicationPath)
 	}
-	fmt.Println(appDir)
 	configs.SetUp(appDir + "/config.ini")
 }
 
@@ -51,6 +50,7 @@ func setupRouter() *gin.Engine {
 		authorized.POST("/article/add", article_admin_ctrl.Add)
 		authorized.GET("/article/list", article_admin_ctrl.GetList)
 		authorized.DELETE("/article/:id", article_admin_ctrl.Delete)
+		authorized.GET("/article/detail/:id", article_admin_ctrl.Detail)
 		authorized.GET("/user/info", user_admin_ctrl.Info)
 	}
 	//404

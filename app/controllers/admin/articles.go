@@ -132,3 +132,24 @@ func (Articles) Delete(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, resp)
 }
+
+func (Articles) Detail(c *gin.Context) {
+	resp := protocol.Resp{Ret: 0, Msg: "", Data: ""}
+	article_id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		resp.Ret = -1
+		resp.Msg = "参数错误"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	article_serv := admin.Articles{}
+	res, err := article_serv.Detail(article_id)
+	if err != nil {
+		resp.Ret = -1
+		resp.Msg = "获取详情失败"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	resp.Data = res
+	c.JSON(http.StatusOK, resp)
+}

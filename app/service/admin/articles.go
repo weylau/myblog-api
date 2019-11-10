@@ -20,6 +20,18 @@ type ArticleParams struct {
 	PublishTime string `json:"publish_time"`
 }
 
+type Detail struct {
+	Id          int    `json:"id"`
+	CateId      int    `json:"cate_id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Keywords    string `json:"keywords"`
+	ImgPath     string `json:"img_path"`
+	Contents    string `json:"contents"`
+	ShowType    int    `json:"show_type"`
+	PublishTime string `json:"publish_time"`
+}
+
 type Articles struct {
 }
 
@@ -111,4 +123,32 @@ func (Articles) Delete(article_id int) (bool, error) {
 		return false, err
 	}
 	return true, nil
+}
+
+/**
+ * 文章详情
+ */
+func (Articles) Detail(article_id int) (*Detail, error) {
+	db := db.DBConn()
+	defer db.Close()
+	article := &model.Articles{}
+	article_content := &model.ArticlesContents{}
+
+	if err := db.Where("article_id = ?", article_id).Find(article).Error; err != nil {
+		return nil, err
+	}
+	if err := db.Where("article_id = ?", article_id).Find(article_content).Error; err != nil {
+		return nil, err
+	}
+	detail := &Detail{}
+	detail.Title = article.Title
+	detail.Id = article_id
+	detail.CateId = article.CateId
+	detail.Description = article.Description
+	detail.Keywords = article.Keywords
+	detail.ImgPath = article.ImgPath
+	detail.PublishTime = article.ModifyTime
+	detail.Contents = article_content.Contents
+	detail.ShowType = article_content.ShowType
+	return detail, nil
 }
