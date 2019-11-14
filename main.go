@@ -48,6 +48,7 @@ func setupRouter() *gin.Engine {
 	authorized.Use(auth_middleware.CheckAuth())
 	{
 		authorized.POST("/article/add", article_admin_ctrl.Add)
+		authorized.PUT("/article/update/:id", article_admin_ctrl.Update)
 		authorized.GET("/article/list", article_admin_ctrl.GetList)
 		authorized.DELETE("/article/:id", article_admin_ctrl.Delete)
 		authorized.GET("/article/detail/:id", article_admin_ctrl.Detail)

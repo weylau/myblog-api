@@ -133,6 +133,73 @@ func (Articles) Delete(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
+func (Articles) Update(c *gin.Context) {
+	resp := &protocol.Resp{Ret: -1, Msg: "", Data: ""}
+	article_id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		resp.Ret = -1
+		resp.Msg = "参数错误"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	helper := helpers.Helpers{}
+	data, err := ioutil.ReadAll(c.Request.Body)
+	if err != nil {
+		resp.Ret = -1
+		resp.Msg = "参数错误1"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	addParams := &AddParams{}
+	err = json.Unmarshal(data, addParams)
+	if err != nil {
+		resp.Ret = -1
+		resp.Msg = "参数错误2" + err.Error()
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	if addParams.CateId <= 0 {
+		resp.Ret = -1
+		resp.Msg = "CateId参数错误"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	if addParams.Title == "" || addParams.Contents == "" {
+		resp.Ret = -1
+		resp.Msg = "参数错误"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+
+	if !helper.IsTimeStr(addParams.PublishTime) {
+		resp.Ret = -1
+		resp.Msg = "发布时间格式错误"
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+	if addParams.ShowType <= 0 {
+		addParams.ShowType = 2
+	}
+	params := &admin.ArticleParams{}
+	params.CateId = addParams.CateId
+	params.Title = addParams.Title
+	params.Description = addParams.Descreption
+	params.Keywords = addParams.Keywords
+	params.Contents = addParams.Contents
+	params.ImgPath = addParams.ImgPath
+	params.PublishTime = addParams.PublishTime
+	params.ShowType = addParams.ShowType
+	admin_id, _ := c.Get("admin_id")
+	username, _ := c.Get("username")
+	aop_id, _ := strconv.Atoi(admin_id.(string))
+	params.OpId = aop_id
+	params.OpUser = username.(string)
+
+	article_serv := admin.Articles{}
+	resp = article_serv.Update(article_id, params)
+	c.JSON(http.StatusOK, resp)
+}
+
 func (Articles) Detail(c *gin.Context) {
 	resp := protocol.Resp{Ret: 0, Msg: "", Data: ""}
 	article_id, err := strconv.Atoi(c.Param("id"))

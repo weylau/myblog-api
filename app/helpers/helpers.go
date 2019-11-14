@@ -151,3 +151,12 @@ func (Helpers) IsTimeStr(str string) bool {
 	}
 	return false
 }
+
+//时间格式转换
+func (Helpers) DateToDateTime(date string) string {
+	timeTemplate := "2006-01-02T15:04:05+08:00" //常规类型
+	toTemplate := "2006-01-02 15:04:05"
+	stamp, _ := time.ParseInLocation(timeTemplate, date, time.Local)
+	return time.Unix(stamp.Unix(), 0).Format(toTemplate)
+
+}

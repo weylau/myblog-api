@@ -27,7 +27,7 @@ func (Articles) GetList(c *gin.Context) {
 		cate_id = 0
 	}
 	article_serv := front.Articles{}
-	article_list, err := article_serv.GetList(page, page_size, cate_id, []string{"article_id", "cate_id", "title", "description", "modify_time"})
+	article_list, err := article_serv.GetListForEs(page, page_size, cate_id, []string{"article_id", "cate_id", "title", "description", "modify_time"})
 	if err != nil {
 		resp.Ret = -1
 		resp.Msg = "系统错误"

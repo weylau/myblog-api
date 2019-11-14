@@ -1,8 +1,16 @@
 package front
 
 import (
+	"fmt"
+	"github.com/weylau/myblog-api/app/helpers"
+	"reflect"
+
+	"context"
 	"github.com/weylau/myblog-api/app/db"
+	"github.com/weylau/myblog-api/app/es"
 	"github.com/weylau/myblog-api/app/model"
+	"gopkg.in/olivere/elastic.v6"
+	//"reflect"
 )
 
 type ArticleDetails struct {
@@ -17,7 +25,7 @@ type Articles struct {
 /**
  *分页获取文章列表
  */
-func (Articles) GetList(page int, page_size int, cate_id int, fields []string) ([]model.Articles, error) {
+func (Articles) GetListForMysql(page int, page_size int, cate_id int, fields []string) ([]model.Articles, error) {
 	db := db.DBConn()
 	defer db.Close()
 	offset := (page - 1) * page_size
@@ -26,6 +34,41 @@ func (Articles) GetList(page int, page_size int, cate_id int, fields []string) (
 		db = db.Where("cate_id = ?", cate_id)
 	}
 	db.Select(fields).Offset(offset).Limit(page_size).Order("article_id desc").Find(&articles)
+	return articles, nil
+}
+
+/**
+ *分页获取文章列表
+ */
+func (Articles) GetListForEs(page int, page_size int, cate_id int, fields []string) ([]model.Articles, error) {
+	db := es.NewClient()
+	ctx := context.Background()
+	helpers := helpers.Helpers{}
+	articles := make([]model.Articles, 0)
+	query := db.Search().
+		Index("myblog").
+		Type("mb_articles").
+		Size(page_size).
+		From((page-1)*page_size).
+		Sort("modify_time", false).
+		Pretty(true)
+	if cate_id > 0 {
+		q := elastic.NewTermQuery("cate_id", cate_id)
+		query = query.Query(q)
+	}
+	result, err := query.Do(ctx)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+	var typ model.Articles
+	for _, item := range result.Each(reflect.TypeOf(typ)) { //从搜索结果中取数据的方法
+		t := item.(model.Articles)
+		t.ModifyTime = helpers.DateToDateTime(t.ModifyTime)
+		t.CreateTime = helpers.DateToDateTime(t.CreateTime)
+		articles = append(articles, t)
+
+	}
 	return articles, nil
 }
 

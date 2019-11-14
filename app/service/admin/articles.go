@@ -93,6 +93,62 @@ func (Articles) Add(params *ArticleParams) (resp *protocol.Resp) {
 	return resp
 }
 
+func (Articles) Update(id int, params *ArticleParams) (resp *protocol.Resp) {
+	resp = &protocol.Resp{Ret: -1, Msg: "", Data: ""}
+	//查询ID是否存在
+	db := db.DBConn()
+	defer db.Close()
+	count := 0
+	if err := db.Model(model.Articles{}).Where("article_id = ?", id).Count(&count).Error; err != nil {
+		resp.Msg = "系统错误：" + err.Error()
+		return resp
+	}
+
+	if count <= 0 {
+		resp.Msg = "文章不存在"
+		return resp
+	}
+	articles := model.Articles{
+		CateId:      params.CateId,
+		Title:       params.Title,
+		Description: params.Description,
+		Keywords:    params.Keywords,
+		ImgPath:     params.ImgPath,
+		OpId:        params.OpId,
+		OpUser:      params.OpUser,
+		ModifyTime:  params.PublishTime,
+	}
+
+	articles_contents := model.ArticlesContents{
+		ShowType: params.ShowType,
+		Contents: params.Contents,
+	}
+	//if articles_contents.GetShowTypeName() == "" {
+	//	resp.Msg = "文章内容显示类型错误"
+	//	return resp
+	//}
+	// 开始事务
+	tx := db.Begin()
+	//添加articles
+	err := db.Model(model.Articles{}).Where("article_id = ?", id).Update(&articles).Error
+	if err != nil {
+		resp.Msg = "系统错误：" + err.Error()
+		tx.Rollback()
+		return resp
+	}
+	//获取插入记录的Id
+	err = db.Model(model.ArticlesContents{}).Where("article_id = ?", id).Updates(&articles_contents).Error
+	if err != nil {
+		resp.Msg = "系统错误：" + err.Error()
+		tx.Rollback()
+		return resp
+	}
+	//提交事务
+	tx.Commit()
+	resp.Ret = 0
+	return resp
+}
+
 /**
  *分页获取文章列表
  */
@@ -116,10 +172,10 @@ func (Articles) GetList(page int, page_size int, cate_id int, fields []string) (
 /**
  *删除文章
  */
-func (Articles) Delete(article_id int) (bool, error) {
+func (Articles) Delete(id int) (bool, error) {
 	db := db.DBConn()
 	defer db.Close()
-	if err := db.Where("article_id = ?", article_id).Delete(&model.Articles{}).Error; err != nil {
+	if err := db.Where("article_id = ?", id).Delete(&model.Articles{}).Error; err != nil {
 		return false, err
 	}
 	return true, nil
@@ -128,21 +184,21 @@ func (Articles) Delete(article_id int) (bool, error) {
 /**
  * 文章详情
  */
-func (Articles) Detail(article_id int) (*Detail, error) {
+func (Articles) Detail(id int) (*Detail, error) {
 	db := db.DBConn()
 	defer db.Close()
 	article := &model.Articles{}
 	article_content := &model.ArticlesContents{}
 
-	if err := db.Where("article_id = ?", article_id).Find(article).Error; err != nil {
+	if err := db.Where("article_id = ?", id).Find(article).Error; err != nil {
 		return nil, err
 	}
-	if err := db.Where("article_id = ?", article_id).Find(article_content).Error; err != nil {
+	if err := db.Where("article_id = ?", id).Find(article_content).Error; err != nil {
 		return nil, err
 	}
 	detail := &Detail{}
 	detail.Title = article.Title
-	detail.Id = article_id
+	detail.Id = id
 	detail.CateId = article.CateId
 	detail.Description = article.Description
 	detail.Keywords = article.Keywords
