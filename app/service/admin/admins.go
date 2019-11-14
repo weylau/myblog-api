@@ -14,12 +14,14 @@ import (
 type Admins struct {
 }
 
+//用户信息
 type UserInfo struct {
 	AdminId  int32  `json:"admin_id"`
 	UserName string `json:"user_name"`
 	Token    string `json:"token"`
 }
 
+//登录
 func (Admins) Login(username string, password string, code uint32) (resp protocol.Resp) {
 	resp = protocol.Resp{Ret: -1, Msg: "", Data: ""}
 	helper := helpers.Helpers{}

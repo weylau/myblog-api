@@ -13,6 +13,7 @@ import (
 	//"reflect"
 )
 
+//文章详情
 type ArticleDetails struct {
 	model.Articles
 	Contents string `json:"contents"`
@@ -22,9 +23,7 @@ type ArticleDetails struct {
 type Articles struct {
 }
 
-/**
- *分页获取文章列表
- */
+//分页获取文章列表mysql
 func (Articles) GetListForMysql(page int, page_size int, cate_id int, fields []string) ([]model.Articles, error) {
 	db := db.DBConn()
 	defer db.Close()
@@ -37,9 +36,7 @@ func (Articles) GetListForMysql(page int, page_size int, cate_id int, fields []s
 	return articles, nil
 }
 
-/**
- *分页获取文章列表
- */
+//分页获取文章列表es
 func (Articles) GetListForEs(page int, page_size int, cate_id int, fields []string) ([]model.Articles, error) {
 	db := es.NewClient()
 	ctx := context.Background()
@@ -72,9 +69,7 @@ func (Articles) GetListForEs(page int, page_size int, cate_id int, fields []stri
 	return articles, nil
 }
 
-/**
-获取文章详情
-*/
+//获取文章详情
 func (Articles) GetArticleDetail(article_id int) *ArticleDetails {
 	article_content := model.ArticlesContents{}
 	article_details := ArticleDetails{}
@@ -87,9 +82,7 @@ func (Articles) GetArticleDetail(article_id int) *ArticleDetails {
 	return &article_details
 }
 
-/**
-获取文章类型
-*/
+//获取文章类型
 func (Articles) GetArticleCate() []model.ArticlesCate {
 	article_cates := make([]model.ArticlesCate, 0)
 	db := db.DBConn()

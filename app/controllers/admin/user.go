@@ -9,6 +9,7 @@ import (
 type User struct {
 }
 
+//用户信息
 type Info struct {
 	Roles        []string `json:"roles"`
 	Introduction string   `json:"introduction"`
@@ -17,14 +18,6 @@ type Info struct {
 }
 
 //用户信息
-/**
-{
-    roles: ['admin'],
-    introduction: 'I am a super administrator',
-    avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
-    name: 'Super Admin'
-  }
-*/
 func (User) Info(c *gin.Context) {
 	resp := &protocol.Resp{Ret: 0, Msg: "", Data: ""}
 	roles := []string{"admin"}

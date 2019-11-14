@@ -13,12 +13,14 @@ import (
 type Login struct {
 }
 
+//登录参数
 type LoginParams struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Code     string `json:"code"`
 }
 
+//登录
 func (Login) Login(c *gin.Context) {
 	resp := protocol.Resp{Ret: 0, Msg: "", Data: ""}
 	data, err := ioutil.ReadAll(c.Request.Body)

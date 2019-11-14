@@ -40,9 +40,7 @@ type ArticleList struct {
 	Datalist []model.Articles `json:"datalist"`
 }
 
-/**
-获取文章详情
-*/
+//添加文章
 func (Articles) Add(params *ArticleParams) (resp *protocol.Resp) {
 	resp = &protocol.Resp{Ret: -1, Msg: "", Data: ""}
 	articles := model.Articles{
@@ -93,6 +91,7 @@ func (Articles) Add(params *ArticleParams) (resp *protocol.Resp) {
 	return resp
 }
 
+//更新文章
 func (Articles) Update(id int, params *ArticleParams) (resp *protocol.Resp) {
 	resp = &protocol.Resp{Ret: -1, Msg: "", Data: ""}
 	//查询ID是否存在
@@ -149,9 +148,7 @@ func (Articles) Update(id int, params *ArticleParams) (resp *protocol.Resp) {
 	return resp
 }
 
-/**
- *分页获取文章列表
- */
+//分页获取文章列表
 func (Articles) GetList(page int, page_size int, cate_id int, fields []string) (*ArticleList, error) {
 	db := db.DBConn()
 	defer db.Close()
@@ -169,9 +166,7 @@ func (Articles) GetList(page int, page_size int, cate_id int, fields []string) (
 	return article_list, nil
 }
 
-/**
- *删除文章
- */
+//删除文章
 func (Articles) Delete(id int) (bool, error) {
 	db := db.DBConn()
 	defer db.Close()
@@ -181,9 +176,7 @@ func (Articles) Delete(id int) (bool, error) {
 	return true, nil
 }
 
-/**
- * 文章详情
- */
+//文章详情
 func (Articles) Detail(id int) (*Detail, error) {
 	db := db.DBConn()
 	defer db.Close()

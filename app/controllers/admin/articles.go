@@ -17,7 +17,7 @@ type Articles struct {
 type AddParams struct {
 	Title       string `json:"title"`
 	CateId      int    `json:"cate_id"`
-	Descreption string `json:"descreption"`
+	Description string `json:"description"`
 	Keywords    string `json:"keywords"`
 	Contents    string `json:"contents"`
 	ImgPath     string `json:"img_path"`
@@ -25,7 +25,7 @@ type AddParams struct {
 	ShowType    int    `json:"show_type"`
 }
 
-//文章列表
+//添加文章
 func (Articles) Add(c *gin.Context) {
 	resp := &protocol.Resp{Ret: -1, Msg: "", Data: ""}
 	helper := helpers.Helpers{}
@@ -69,7 +69,7 @@ func (Articles) Add(c *gin.Context) {
 	params := &admin.ArticleParams{}
 	params.CateId = addParams.CateId
 	params.Title = addParams.Title
-	params.Description = addParams.Descreption
+	params.Description = addParams.Description
 	params.Keywords = addParams.Keywords
 	params.Contents = addParams.Contents
 	params.ImgPath = addParams.ImgPath
@@ -113,6 +113,7 @@ func (Articles) GetList(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
+//删除文章
 func (Articles) Delete(c *gin.Context) {
 	resp := protocol.Resp{Ret: 0, Msg: "", Data: ""}
 	article_id, err := strconv.Atoi(c.Param("id"))
@@ -133,6 +134,7 @@ func (Articles) Delete(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
+//更新文章
 func (Articles) Update(c *gin.Context) {
 	resp := &protocol.Resp{Ret: -1, Msg: "", Data: ""}
 	article_id, err := strconv.Atoi(c.Param("id"))
@@ -183,7 +185,7 @@ func (Articles) Update(c *gin.Context) {
 	params := &admin.ArticleParams{}
 	params.CateId = addParams.CateId
 	params.Title = addParams.Title
-	params.Description = addParams.Descreption
+	params.Description = addParams.Description
 	params.Keywords = addParams.Keywords
 	params.Contents = addParams.Contents
 	params.ImgPath = addParams.ImgPath
