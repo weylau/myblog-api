@@ -39,10 +39,9 @@ func (Articles) GetList(c *gin.Context) {
 }
 
 //文章详情
-func (Articles) GetDetail(c *gin.Context) {
+func (Articles) Show(c *gin.Context) {
 	resp := protocol.Resp{Ret: 0, Msg: "", Data: ""}
-	id, err := strconv.Atoi(c.DefaultQuery("id", "0"))
-
+	id, err := strconv.Atoi(c.Param("id"))
 	article_serv := front.Articles{}
 	if err != nil || id <= 0 {
 		resp.Ret = -1
@@ -56,7 +55,7 @@ func (Articles) GetDetail(c *gin.Context) {
 }
 
 //文章类型
-func (Articles) GetCate(c *gin.Context) {
+func (Articles) GetCategories(c *gin.Context) {
 	resp := protocol.Resp{Ret: 0, Msg: "", Data: ""}
 	article_serv := front.Articles{}
 	resp.Data = article_serv.GetArticleCate()

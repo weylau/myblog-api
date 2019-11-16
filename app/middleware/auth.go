@@ -3,8 +3,8 @@ package middleware
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/weylau/myblog-api/app/configs"
-	"github.com/weylau/myblog-api/app/helpers"
+	"github.com/weylau/myblog-api/app/config"
+	"github.com/weylau/myblog-api/app/helper"
 	"github.com/weylau/myblog-api/app/protocol"
 	"net/http"
 	"strconv"
@@ -13,6 +13,10 @@ import (
 )
 
 type Auth struct {
+}
+
+func Default() *Auth {
+	return &Auth{}
 }
 
 func (Auth) CheckAuth() gin.HandlerFunc {
@@ -36,8 +40,7 @@ func (Auth) CheckAuth() gin.HandlerFunc {
 			return
 		}
 		token := kv[1]
-		helper := helpers.Helpers{}
-		auth_info, err := helper.JwtDncode(token, []byte(configs.Configs.JwtSecret))
+		auth_info, err := helper.JwtDncode(token, []byte(config.Configs.JwtSecret))
 		if err != nil {
 			resp.Ret = 603
 			resp.Msg = "登录失败，请重新登录" + err.Error()
@@ -65,7 +68,7 @@ func (Auth) CheckAuth() gin.HandlerFunc {
 			return
 		}
 
-		if curent_time-auth_time > configs.Configs.JwtExprTime {
+		if curent_time-auth_time > config.Configs.JwtExprTime {
 			resp.Ret = 607
 			resp.Msg = "登录失效，请重新登录"
 			c.JSON(http.StatusOK, resp)

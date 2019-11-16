@@ -3,7 +3,7 @@ package admin
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"github.com/weylau/myblog-api/app/helpers"
+	"github.com/weylau/myblog-api/app/helper"
 	"github.com/weylau/myblog-api/app/protocol"
 	"github.com/weylau/myblog-api/app/service/admin"
 	"io/ioutil"
@@ -28,7 +28,6 @@ type AddParams struct {
 //添加文章
 func (Articles) Add(c *gin.Context) {
 	resp := &protocol.Resp{Ret: -1, Msg: "", Data: ""}
-	helper := helpers.Helpers{}
 	data, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		resp.Ret = -1
@@ -144,7 +143,6 @@ func (Articles) Update(c *gin.Context) {
 		c.JSON(http.StatusOK, resp)
 		return
 	}
-	helper := helpers.Helpers{}
 	data, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		resp.Ret = -1
@@ -202,7 +200,7 @@ func (Articles) Update(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
-func (Articles) Detail(c *gin.Context) {
+func (Articles) Show(c *gin.Context) {
 	resp := protocol.Resp{Ret: 0, Msg: "", Data: ""}
 	article_id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {

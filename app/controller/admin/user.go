@@ -18,7 +18,7 @@ type Info struct {
 }
 
 //用户信息
-func (User) Info(c *gin.Context) {
+func (User) Show(c *gin.Context) {
 	resp := &protocol.Resp{Ret: 0, Msg: "", Data: ""}
 	roles := []string{"admin"}
 	resp.Data = &Info{

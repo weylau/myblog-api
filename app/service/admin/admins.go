@@ -3,9 +3,9 @@ package admin
 import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/weylau/myblog-api/app/configs"
-	"github.com/weylau/myblog-api/app/db"
-	"github.com/weylau/myblog-api/app/helpers"
+	"github.com/weylau/myblog-api/app/config"
+	"github.com/weylau/myblog-api/app/db/mysql"
+	"github.com/weylau/myblog-api/app/helper"
 	"github.com/weylau/myblog-api/app/model"
 	"github.com/weylau/myblog-api/app/protocol"
 	"time"
@@ -24,10 +24,9 @@ type UserInfo struct {
 //登录
 func (Admins) Login(username string, password string, code uint32) (resp protocol.Resp) {
 	resp = protocol.Resp{Ret: -1, Msg: "", Data: ""}
-	helper := helpers.Helpers{}
 
 	//校验谷歌验证码
-	ga_code, err := helper.MkGaCode(configs.Configs.GaSecret)
+	ga_code, err := helper.MkGaCode(config.Configs.GaSecret)
 	if err != nil {
 		resp.Msg = "系统错误"
 		return resp
@@ -38,7 +37,7 @@ func (Admins) Login(username string, password string, code uint32) (resp protoco
 		return resp
 	}
 
-	db := db.DBConn()
+	db := mysql.Default().GetConn()
 	defer db.Close()
 	//查询用户
 	admin := model.Admins{}
@@ -58,7 +57,7 @@ func (Admins) Login(username string, password string, code uint32) (resp protoco
 	}
 
 	//生成token
-	token, err := helper.JwtEncode(jwt.MapClaims{"admin_id": fmt.Sprintf("%d", admin.AdminId), "username": admin.Username, "expr_time": fmt.Sprintf("%d", time.Now().Unix())}, []byte(configs.Configs.JwtSecret))
+	token, err := helper.JwtEncode(jwt.MapClaims{"admin_id": fmt.Sprintf("%d", admin.AdminId), "username": admin.Username, "expr_time": fmt.Sprintf("%d", time.Now().Unix())}, []byte(config.Configs.JwtSecret))
 	if err != nil {
 		resp.Ret = -999
 		resp.Msg = "系统错误:" + err.Error()

@@ -1,7 +1,7 @@
 package admin
 
 import (
-	"github.com/weylau/myblog-api/app/db"
+	"github.com/weylau/myblog-api/app/db/mysql"
 	"github.com/weylau/myblog-api/app/model"
 	"github.com/weylau/myblog-api/app/protocol"
 	"time"
@@ -64,7 +64,7 @@ func (Articles) Add(params *ArticleParams) (resp *protocol.Resp) {
 	//	return resp
 	//}
 	//添加articles_contents
-	db := db.DBConn()
+	db := mysql.Default().GetConn()
 	defer db.Close()
 	// 开始事务
 	tx := db.Begin()
@@ -95,7 +95,7 @@ func (Articles) Add(params *ArticleParams) (resp *protocol.Resp) {
 func (Articles) Update(id int, params *ArticleParams) (resp *protocol.Resp) {
 	resp = &protocol.Resp{Ret: -1, Msg: "", Data: ""}
 	//查询ID是否存在
-	db := db.DBConn()
+	db := mysql.Default().GetConn()
 	defer db.Close()
 	count := 0
 	if err := db.Model(model.Articles{}).Where("article_id = ?", id).Count(&count).Error; err != nil {
@@ -150,7 +150,7 @@ func (Articles) Update(id int, params *ArticleParams) (resp *protocol.Resp) {
 
 //分页获取文章列表
 func (Articles) GetList(page int, page_size int, cate_id int, fields []string) (*ArticleList, error) {
-	db := db.DBConn()
+	db := mysql.Default().GetConn()
 	defer db.Close()
 	offset := (page - 1) * page_size
 	article_list := &ArticleList{}
@@ -168,7 +168,7 @@ func (Articles) GetList(page int, page_size int, cate_id int, fields []string) (
 
 //删除文章
 func (Articles) Delete(id int) (bool, error) {
-	db := db.DBConn()
+	db := mysql.Default().GetConn()
 	defer db.Close()
 	if err := db.Where("article_id = ?", id).Delete(&model.Articles{}).Error; err != nil {
 		return false, err
@@ -178,7 +178,7 @@ func (Articles) Delete(id int) (bool, error) {
 
 //文章详情
 func (Articles) Detail(id int) (*Detail, error) {
-	db := db.DBConn()
+	db := mysql.Default().GetConn()
 	defer db.Close()
 	article := &model.Articles{}
 	article_content := &model.ArticlesContents{}

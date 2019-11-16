@@ -1,15 +1,14 @@
 package front
 
 import (
-	"fmt"
-	"github.com/weylau/myblog-api/app/helpers"
-	"reflect"
-
 	"context"
-	"github.com/weylau/myblog-api/app/db"
-	"github.com/weylau/myblog-api/app/es"
+	"fmt"
+	"github.com/weylau/myblog-api/app/db/es"
+	"github.com/weylau/myblog-api/app/db/mysql"
+	"github.com/weylau/myblog-api/app/helper"
 	"github.com/weylau/myblog-api/app/model"
 	"gopkg.in/olivere/elastic.v6"
+	"reflect"
 	//"reflect"
 )
 
@@ -25,7 +24,7 @@ type Articles struct {
 
 //分页获取文章列表mysql
 func (Articles) GetListForMysql(page int, page_size int, cate_id int, fields []string) ([]model.Articles, error) {
-	db := db.DBConn()
+	db := mysql.Default().GetConn()
 	defer db.Close()
 	offset := (page - 1) * page_size
 	articles := make([]model.Articles, 0)
@@ -38,11 +37,10 @@ func (Articles) GetListForMysql(page int, page_size int, cate_id int, fields []s
 
 //分页获取文章列表es
 func (Articles) GetListForEs(page int, page_size int, cate_id int, fields []string) ([]model.Articles, error) {
-	db := es.NewClient()
+	esconn := es.Default().GetConn()
 	ctx := context.Background()
-	helpers := helpers.Helpers{}
 	articles := make([]model.Articles, 0)
-	query := db.Search().
+	query := esconn.Search().
 		Index("myblog").
 		Type("mb_articles").
 		Size(page_size).
@@ -61,8 +59,8 @@ func (Articles) GetListForEs(page int, page_size int, cate_id int, fields []stri
 	var typ model.Articles
 	for _, item := range result.Each(reflect.TypeOf(typ)) { //从搜索结果中取数据的方法
 		t := item.(model.Articles)
-		t.ModifyTime = helpers.DateToDateTime(t.ModifyTime)
-		t.CreateTime = helpers.DateToDateTime(t.CreateTime)
+		t.ModifyTime = helper.DateToDateTime(t.ModifyTime)
+		t.CreateTime = helper.DateToDateTime(t.CreateTime)
 		articles = append(articles, t)
 
 	}
@@ -73,7 +71,7 @@ func (Articles) GetListForEs(page int, page_size int, cate_id int, fields []stri
 func (Articles) GetArticleDetail(article_id int) *ArticleDetails {
 	article_content := model.ArticlesContents{}
 	article_details := ArticleDetails{}
-	db := db.DBConn()
+	db := mysql.Default().GetConn()
 	defer db.Close()
 	db.Where("article_id = ?", article_id).First(&article_details)
 	db.Where("article_id = ?", article_id).First(&article_content)
@@ -85,7 +83,7 @@ func (Articles) GetArticleDetail(article_id int) *ArticleDetails {
 //获取文章类型
 func (Articles) GetArticleCate() []model.ArticlesCate {
 	article_cates := make([]model.ArticlesCate, 0)
-	db := db.DBConn()
+	db := mysql.Default().GetConn()
 	defer db.Close()
 	db.Order("orderby asc").Find(&article_cates)
 	return article_cates

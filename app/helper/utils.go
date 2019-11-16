@@ -1,4 +1,4 @@
-package helpers
+package helper
 
 import (
 	"crypto/hmac"
@@ -12,17 +12,14 @@ import (
 	"time"
 )
 
-type Helpers struct {
-}
-
-func (Helpers) MkMd5(str string) string {
+func MkMd5(str string) string {
 	data := []byte(str)
 	has := md5.Sum(data)
 	md5str := fmt.Sprintf("%x", has)
 	return md5str
 }
 
-func (Helpers) IsEmpty(params interface{}) bool {
+func IsEmpty(params interface{}) bool {
 	//初始化变量
 	var (
 		flag          bool = true
@@ -41,14 +38,14 @@ func (Helpers) IsEmpty(params interface{}) bool {
 }
 
 //jwt加密
-func (Helpers) JwtEncode(jwtinfo jwt.MapClaims, secret_key []byte) (jwt_token string, err error) {
+func JwtEncode(jwtinfo jwt.MapClaims, secret_key []byte) (jwt_token string, err error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwtinfo)
 	tokenString, err := token.SignedString(secret_key)
 	return tokenString, err
 }
 
 //jwt解密
-func (Helpers) JwtDncode(token_string string, secret_key interface{}) (token_info map[string]interface{}, err error) {
+func JwtDncode(token_string string, secret_key interface{}) (token_info map[string]interface{}, err error) {
 	token, err := jwt.Parse(token_string, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
@@ -64,7 +61,7 @@ func (Helpers) JwtDncode(token_string string, secret_key interface{}) (token_inf
 	return nil, err
 }
 
-func (Helpers) Interface2String(inter interface{}) (str string) {
+func Interface2String(inter interface{}) (str string) {
 	str = ""
 	switch inter.(type) {
 	case string:
@@ -78,7 +75,7 @@ func (Helpers) Interface2String(inter interface{}) (str string) {
 /**
  * 获取谷歌验证码
  */
-func (Helpers) MkGaCode(secret string) (code uint32, err error) {
+func MkGaCode(secret string) (code uint32, err error) {
 
 	// decode the key from the first argument
 	inputNoSpaces := strings.Replace(secret, " ", "", -1)
@@ -139,7 +136,7 @@ func toUint32(bytes []byte) uint32 {
 		(uint32(bytes[2]) << 8) + uint32(bytes[3])
 }
 
-func (Helpers) IsTimeStr(str string) bool {
+func IsTimeStr(str string) bool {
 	timeLayout := "2006-01-02 15:04:05"                        //转化所需模板
 	loc, _ := time.LoadLocation("Local")                       //重要：获取时区
 	theTime, err := time.ParseInLocation(timeLayout, str, loc) //使用模板在对应时区转化为time.time类型
@@ -153,7 +150,7 @@ func (Helpers) IsTimeStr(str string) bool {
 }
 
 //时间格式转换
-func (Helpers) DateToDateTime(date string) string {
+func DateToDateTime(date string) string {
 	timeTemplate := "2006-01-02T15:04:05+08:00" //常规类型
 	toTemplate := "2006-01-02 15:04:05"
 	stamp, _ := time.ParseInLocation(timeTemplate, date, time.Local)
