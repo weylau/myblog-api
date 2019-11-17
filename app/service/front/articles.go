@@ -3,11 +3,11 @@ package front
 import (
 	"context"
 	"fmt"
-	"github.com/weylau/myblog-api/app/db/es"
-	"github.com/weylau/myblog-api/app/db/mysql"
-	"github.com/weylau/myblog-api/app/helper"
-	"github.com/weylau/myblog-api/app/model"
-	"gopkg.in/olivere/elastic.v6"
+	"myblog-api/app/db/es"
+	"myblog-api/app/db/mysql"
+	"myblog-api/app/helper"
+	"myblog-api/app/model"
+	"github.com/olivere/elastic"
 	"reflect"
 	//"reflect"
 )

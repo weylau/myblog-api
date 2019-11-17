@@ -2,25 +2,8 @@
 
 #### 1、安装 Go 并且设置好你的 Go 工作空间
 
-#### 2、govendor依赖管理工具
-```
-$ go get github.com/kardianos/govendor
-```
-#### 3、创建项目
-```$xslt
-$ mkdir -p $GOPATH/src/github.com/weylau/myblog-api && cd "$_"
-```
-#### 4、安装依赖
-```
-$ govendor init
-$ govendor fetch github.com/gin-gonic/gin@v1.3
-$ govendor fetch github.com/go-sql-driver/mysql@v1.4.0
-$ govendor fetch github.com/jinzhu/gorm@v1.9.8
-$ govendor fetch github.com/dgrijalva/jwt-go@v3.2.0
-$ govendor fetch golang.org/x/sys/unix
-$ govendor fetch gopkg.in/ini.v1
-```
-#### 4、启动
+#### 2、启动
 ```$xslt
 $ go run main.go
 ```
+ No newline at end of file

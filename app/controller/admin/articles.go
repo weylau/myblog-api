@@ -3,10 +3,11 @@ package admin
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"github.com/weylau/myblog-api/app/helper"
-	"github.com/weylau/myblog-api/app/protocol"
-	"github.com/weylau/myblog-api/app/service/admin"
+	"myblog-api/app/helper"
+	"myblog-api/app/protocol"
+	"myblog-api/app/service/admin"
 	"io/ioutil"
+	"myblog-api/app/validate"
 	"net/http"
 	"strconv"
 )
@@ -15,14 +16,15 @@ type Articles struct {
 }
 
 type AddParams struct {
-	Title       string `json:"title"`
-	CateId      int    `json:"cate_id"`
+	Title       string `json:"title" validate:"gt=4"`
+	CateId      int    `json:"cate_id" validate:"gt=0"`
 	Description string `json:"description"`
 	Keywords    string `json:"keywords"`
-	Contents    string `json:"contents"`
+	Contents    string `json:"contents" validate:"required"`
 	ImgPath     string `json:"img_path"`
-	PublishTime string `json:"publish_time"`
-	ShowType    int    `json:"show_type"`
+	PublishTime string `json:"publish_time" validate:"required"`
+	ShowType    int    `json:"show_type" validate:"required"`
+	Status      int    `json:"status" validate:"required"`
 }
 
 //添加文章
@@ -43,15 +45,11 @@ func (Articles) Add(c *gin.Context) {
 		c.JSON(http.StatusOK, resp)
 		return
 	}
-	if addParams.CateId <= 0 {
+
+	validator,_ := validate.Default()
+	if check := validator.CheckStruct(addParams); !check{
 		resp.Ret = -1
-		resp.Msg = "CateId参数错误"
-		c.JSON(http.StatusOK, resp)
-		return
-	}
-	if addParams.Title == "" || addParams.Contents == "" {
-		resp.Ret = -1
-		resp.Msg = "参数错误"
+		resp.Msg = validator.GetOneError()
 		c.JSON(http.StatusOK, resp)
 		return
 	}
@@ -158,15 +156,11 @@ func (Articles) Update(c *gin.Context) {
 		c.JSON(http.StatusOK, resp)
 		return
 	}
-	if addParams.CateId <= 0 {
+
+	validator,_ := validate.Default()
+	if check := validator.CheckStruct(addParams); !check{
 		resp.Ret = -1
-		resp.Msg = "CateId参数错误"
-		c.JSON(http.StatusOK, resp)
-		return
-	}
-	if addParams.Title == "" || addParams.Contents == "" {
-		resp.Ret = -1
-		resp.Msg = "参数错误"
+		resp.Msg = validator.GetOneError()
 		c.JSON(http.StatusOK, resp)
 		return
 	}

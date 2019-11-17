@@ -2,7 +2,7 @@ package admin
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/weylau/myblog-api/app/protocol"
+	"myblog-api/app/protocol"
 	"net/http"
 )
 

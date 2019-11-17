@@ -3,11 +3,11 @@ package admin
 import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/weylau/myblog-api/app/config"
-	"github.com/weylau/myblog-api/app/db/mysql"
-	"github.com/weylau/myblog-api/app/helper"
-	"github.com/weylau/myblog-api/app/model"
-	"github.com/weylau/myblog-api/app/protocol"
+	"myblog-api/app/config"
+	"myblog-api/app/db/mysql"
+	"myblog-api/app/helper"
+	"myblog-api/app/model"
+	"myblog-api/app/protocol"
 	"time"
 )
 

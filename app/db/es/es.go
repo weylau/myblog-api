@@ -2,8 +2,8 @@ package es
 
 import (
 	"context"
-	"github.com/weylau/myblog-api/app/config"
-	"gopkg.in/olivere/elastic.v6"
+	"myblog-api/app/config"
+	"github.com/olivere/elastic"
 )
 
 type Es struct {

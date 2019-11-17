@@ -3,9 +3,9 @@ package middleware
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/weylau/myblog-api/app/config"
-	"github.com/weylau/myblog-api/app/helper"
-	"github.com/weylau/myblog-api/app/protocol"
+	"myblog-api/app/config"
+	"myblog-api/app/helper"
+	"myblog-api/app/protocol"
 	"net/http"
 	"strconv"
 	"strings"

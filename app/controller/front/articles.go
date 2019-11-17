@@ -2,8 +2,8 @@ package front
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/weylau/myblog-api/app/protocol"
-	"github.com/weylau/myblog-api/app/service/front"
+	"myblog-api/app/protocol"
+	"myblog-api/app/service/front"
 	"net/http"
 	"strconv"
 )

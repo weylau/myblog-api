@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/weylau/myblog-api/app/config"
-	"github.com/weylau/myblog-api/app/router"
+	"myblog-api/app/config"
+	"myblog-api/app/router"
 	"os"
 	"os/exec"
 	"path/filepath"

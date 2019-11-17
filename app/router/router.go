@@ -2,10 +2,10 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/weylau/myblog-api/app/controller/admin"
-	"github.com/weylau/myblog-api/app/controller/front"
-	"github.com/weylau/myblog-api/app/middleware"
-	"github.com/weylau/myblog-api/app/protocol"
+	"myblog-api/app/controller/admin"
+	"myblog-api/app/controller/front"
+	"myblog-api/app/middleware"
+	"myblog-api/app/protocol"
 	"net/http"
 )
 
