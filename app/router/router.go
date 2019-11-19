@@ -20,6 +20,7 @@ func Default() *Router {
 }
 
 func (this *Router) Run() {
+	this.SetCors()
 	this.setFront()
 	this.setAdmin()
 	this.set404()
@@ -27,6 +28,10 @@ func (this *Router) Run() {
 
 func (this *Router) GetEngin() *gin.Engine {
 	return this.engine
+}
+
+func (this *Router) SetCors() {
+	this.engine.Use(middleware.Cors())
 }
 
 func (this *Router) setFront() {
@@ -42,10 +47,8 @@ func (this *Router) setAdmin() {
 	article_admin_ctrl := admin.Articles{}
 	user_admin_ctrl := admin.User{}
 	this.engine.POST("/adapi/login", login_admin_ctrl.Login)
-	auth_middleware := middleware.Default()
-	this.engine.Use(auth_middleware.Cors())
 	authorized := this.engine.Group("/adapi")
-	authorized.Use(auth_middleware.CheckAuth())
+	authorized.Use(middleware.CheckAuth())
 	{
 		authorized.POST("/article", article_admin_ctrl.Add)
 		authorized.PUT("/article/:id", article_admin_ctrl.Update)

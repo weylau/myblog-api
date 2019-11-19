@@ -2,10 +2,11 @@ package admin
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
 	"myblog-api/app/protocol"
 	"myblog-api/app/service/admin"
-	"io/ioutil"
 	"myblog-api/app/validate"
 	"net/http"
 	"strconv"
@@ -25,6 +26,7 @@ type LoginParams struct {
 func (Login) Login(c *gin.Context) {
 	resp := protocol.Resp{Ret: 0, Msg: "", Data: ""}
 	data, err := ioutil.ReadAll(c.Request.Body)
+	fmt.Println(11111111)
 	if err != nil {
 		resp.Ret = -1
 		resp.Msg = "用户名或密码不能为空1"
@@ -50,8 +52,8 @@ func (Login) Login(c *gin.Context) {
 	}
 
 	admin_serv := admin.Admins{}
-	validator,_ := validate.Default()
-	if check := validator.CheckStruct(loginParams); !check{
+	validator, _ := validate.Default()
+	if check := validator.CheckStruct(loginParams); !check {
 		resp.Ret = -1
 		resp.Msg = validator.GetOneError()
 		c.JSON(http.StatusOK, resp)

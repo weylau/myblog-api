@@ -18,6 +18,7 @@ type ArticleParams struct {
 	Contents    string `json:"contents"`
 	ShowType    int    `json:"show_type"`
 	PublishTime string `json:"publish_time"`
+	Status      int    `json:"status"`
 }
 
 type Detail struct {
@@ -29,6 +30,7 @@ type Detail struct {
 	ImgPath     string `json:"img_path"`
 	Contents    string `json:"contents"`
 	ShowType    int    `json:"show_type"`
+	Status      int    `json:"status"`
 	PublishTime string `json:"publish_time"`
 }
 
@@ -52,6 +54,7 @@ func (Articles) Add(params *ArticleParams) (resp *protocol.Resp) {
 		OpId:        params.OpId,
 		OpUser:      params.OpUser,
 		ModifyTime:  params.PublishTime,
+		Status:      params.Status,
 		CreateTime:  time.Now().Format("2006-01-02 15:04:05"),
 	}
 
@@ -110,6 +113,7 @@ func (Articles) Update(id int, params *ArticleParams) (resp *protocol.Resp) {
 	articles := model.Articles{
 		CateId:      params.CateId,
 		Title:       params.Title,
+		Status:      params.Status,
 		Description: params.Description,
 		Keywords:    params.Keywords,
 		ImgPath:     params.ImgPath,
@@ -196,8 +200,10 @@ func (Articles) Detail(id int) (*Detail, error) {
 	detail.Description = article.Description
 	detail.Keywords = article.Keywords
 	detail.ImgPath = article.ImgPath
+	detail.Status = article.Status
 	detail.PublishTime = article.ModifyTime
 	detail.Contents = article_content.Contents
 	detail.ShowType = article_content.ShowType
+
 	return detail, nil
 }

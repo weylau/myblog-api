@@ -12,14 +12,7 @@ import (
 	"time"
 )
 
-type Auth struct {
-}
-
-func Default() *Auth {
-	return &Auth{}
-}
-
-func (Auth) CheckAuth() gin.HandlerFunc {
+func CheckAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		resp := protocol.Resp{Ret: -1, Msg: "", Data: ""}
 		authorization := c.Request.Header.Get("Authorization")
@@ -82,7 +75,7 @@ func (Auth) CheckAuth() gin.HandlerFunc {
 
 }
 
-func (Auth) Cors() gin.HandlerFunc {
+func Cors() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		method := c.Request.Method               //请求方法
 		origin := c.Request.Header.Get("Origin") //请求头部
@@ -96,6 +89,7 @@ func (Auth) Cors() gin.HandlerFunc {
 		} else {
 			headerStr = "access-control-allow-origin, access-control-allow-headers"
 		}
+		fmt.Println("method", method)
 		if origin != "" {
 			//c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 			c.Header("Access-Control-Allow-Origin", "*")                                       // 这是允许访问所有域

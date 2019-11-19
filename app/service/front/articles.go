@@ -3,11 +3,11 @@ package front
 import (
 	"context"
 	"fmt"
+	"github.com/olivere/elastic"
 	"myblog-api/app/db/es"
 	"myblog-api/app/db/mysql"
 	"myblog-api/app/helper"
 	"myblog-api/app/model"
-	"github.com/olivere/elastic"
 	"reflect"
 	//"reflect"
 )
@@ -40,9 +40,11 @@ func (Articles) GetListForEs(page int, page_size int, cate_id int, fields []stri
 	esconn := es.Default().GetConn()
 	ctx := context.Background()
 	articles := make([]model.Articles, 0)
+	statusQuery := elastic.NewTermQuery("status", 1)
 	query := esconn.Search().
 		Index("myblog").
 		Type("mb_articles").
+		Query(statusQuery).
 		Size(page_size).
 		From((page-1)*page_size).
 		Sort("modify_time", false).

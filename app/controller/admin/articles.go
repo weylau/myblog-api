@@ -3,10 +3,10 @@ package admin
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
 	"myblog-api/app/helper"
 	"myblog-api/app/protocol"
 	"myblog-api/app/service/admin"
-	"io/ioutil"
 	"myblog-api/app/validate"
 	"net/http"
 	"strconv"
@@ -46,8 +46,8 @@ func (Articles) Add(c *gin.Context) {
 		return
 	}
 
-	validator,_ := validate.Default()
-	if check := validator.CheckStruct(addParams); !check{
+	validator, _ := validate.Default()
+	if check := validator.CheckStruct(addParams); !check {
 		resp.Ret = -1
 		resp.Msg = validator.GetOneError()
 		c.JSON(http.StatusOK, resp)
@@ -72,6 +72,7 @@ func (Articles) Add(c *gin.Context) {
 	params.ImgPath = addParams.ImgPath
 	params.PublishTime = addParams.PublishTime
 	params.ShowType = addParams.ShowType
+	params.Status = addParams.Status
 	admin_id, _ := c.Get("admin_id")
 	username, _ := c.Get("username")
 	aop_id, _ := strconv.Atoi(admin_id.(string))
@@ -99,7 +100,7 @@ func (Articles) GetList(c *gin.Context) {
 		cate_id = 0
 	}
 	article_serv := admin.Articles{}
-	article_list, err := article_serv.GetList(page, page_size, cate_id, []string{"article_id", "cate_id", "title", "description", "op_user", "modify_time"})
+	article_list, err := article_serv.GetList(page, page_size, cate_id, []string{"article_id", "cate_id", "title", "description", "op_user", "modify_time", "status"})
 	if err != nil {
 		resp.Ret = -1
 		resp.Msg = "系统错误"
@@ -157,8 +158,8 @@ func (Articles) Update(c *gin.Context) {
 		return
 	}
 
-	validator,_ := validate.Default()
-	if check := validator.CheckStruct(addParams); !check{
+	validator, _ := validate.Default()
+	if check := validator.CheckStruct(addParams); !check {
 		resp.Ret = -1
 		resp.Msg = validator.GetOneError()
 		c.JSON(http.StatusOK, resp)
@@ -183,6 +184,7 @@ func (Articles) Update(c *gin.Context) {
 	params.ImgPath = addParams.ImgPath
 	params.PublishTime = addParams.PublishTime
 	params.ShowType = addParams.ShowType
+	params.Status = addParams.Status
 	admin_id, _ := c.Get("admin_id")
 	username, _ := c.Get("username")
 	aop_id, _ := strconv.Atoi(admin_id.(string))

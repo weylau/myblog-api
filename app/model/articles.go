@@ -11,6 +11,7 @@ type Articles struct {
 	OpId        int    `json:"op_id"`
 	OpUser      string `json:"op_user"`
 	CreateTime  string `json:"create_time"`
+	Status      int    `json:"status"`
 }
 
 func (Articles) TableName() string {
