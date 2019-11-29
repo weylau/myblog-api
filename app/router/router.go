@@ -20,6 +20,7 @@ func Default() *Router {
 }
 
 func (this *Router) Run() {
+	this.SetAccessLog()
 	this.SetCors()
 	this.setFront()
 	this.setAdmin()
@@ -29,7 +30,9 @@ func (this *Router) Run() {
 func (this *Router) GetEngin() *gin.Engine {
 	return this.engine
 }
-
+func (this *Router) SetAccessLog() {
+	this.engine.Use(middleware.AddAccessLog())
+}
 func (this *Router) SetCors() {
 	this.engine.Use(middleware.Cors())
 }

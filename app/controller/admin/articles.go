@@ -37,7 +37,7 @@ func (this *Articles) Add(c *gin.Context) {
 	var addParams AddParams
 	err := c.ShouldBindJSON(&addParams)
 	jsonstr, _ := json.Marshal(addParams)
-	loger.Default().Info("Articles-Add-Params:", jsonstr)
+	loger.Default().Info("Articles-Add-Params:", string(jsonstr))
 	if err != nil {
 		loger.Default().Info(this.getLogTitle(), "Add-error1:", err.Error())
 		resp.Ret = -1
@@ -134,7 +134,7 @@ func (this *Articles) Update(c *gin.Context) {
 	var addParams AddParams
 	err = c.ShouldBindJSON(&addParams)
 	jsonstr, _ := json.Marshal(addParams)
-	loger.Default().Info("Articles-Update-Params:", jsonstr)
+	loger.Default().Info("Articles-Update-Params:", string(jsonstr))
 	if err != nil {
 		loger.Default().Info(this.getLogTitle(), "Update-error2:", err.Error())
 		resp.Ret = -1
