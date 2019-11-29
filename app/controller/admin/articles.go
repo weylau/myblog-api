@@ -3,8 +3,8 @@ package admin
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"io/ioutil"
 	"myblog-api/app/helper"
+	"myblog-api/app/loger"
 	"myblog-api/app/protocol"
 	"myblog-api/app/service/admin"
 	"myblog-api/app/validate"
@@ -13,6 +13,10 @@ import (
 )
 
 type Articles struct {
+}
+
+func (*Articles) getLogTitle() string {
+	return "ctrller-admin-articles-"
 }
 
 type AddParams struct {
@@ -28,20 +32,16 @@ type AddParams struct {
 }
 
 //添加文章
-func (Articles) Add(c *gin.Context) {
+func (this *Articles) Add(c *gin.Context) {
 	resp := &protocol.Resp{Ret: -1, Msg: "", Data: ""}
-	data, err := ioutil.ReadAll(c.Request.Body)
+	var addParams AddParams
+	err := c.ShouldBindJSON(&addParams)
+	jsonstr, _ := json.Marshal(addParams)
+	loger.Default().Info("Articles-Add-Params:", jsonstr)
 	if err != nil {
+		loger.Default().Info(this.getLogTitle(), "Add-error1:", err.Error())
 		resp.Ret = -1
-		resp.Msg = "参数错误1"
-		c.JSON(http.StatusOK, resp)
-		return
-	}
-	addParams := &AddParams{}
-	err = json.Unmarshal(data, addParams)
-	if err != nil {
-		resp.Ret = -1
-		resp.Msg = "参数错误2" + err.Error()
+		resp.Msg = "参数错误"
 		c.JSON(http.StatusOK, resp)
 		return
 	}
@@ -85,8 +85,8 @@ func (Articles) Add(c *gin.Context) {
 }
 
 //文章列表
-func (Articles) GetList(c *gin.Context) {
-	resp := protocol.Resp{Ret: 0, Msg: "", Data: ""}
+func (this *Articles) GetList(c *gin.Context) {
+	resp := &protocol.Resp{Ret: 0, Msg: "2", Data: ""}
 	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
 	if err != nil {
 		page = 1
@@ -100,60 +100,45 @@ func (Articles) GetList(c *gin.Context) {
 		cate_id = 0
 	}
 	article_serv := admin.Articles{}
-	article_list, err := article_serv.GetList(page, page_size, cate_id, []string{"article_id", "cate_id", "title", "description", "op_user", "modify_time", "status"})
-	if err != nil {
-		resp.Ret = -1
-		resp.Msg = "系统错误"
-		c.JSON(http.StatusOK, resp)
-		return
-	}
-	resp.Data = article_list
+	resp = article_serv.GetList(page, page_size, cate_id, []string{"article_id", "cate_id", "title", "description", "op_user", "modify_time", "status"})
 	c.JSON(http.StatusOK, resp)
 }
 
 //删除文章
-func (Articles) Delete(c *gin.Context) {
-	resp := protocol.Resp{Ret: 0, Msg: "", Data: ""}
+func (this *Articles) Delete(c *gin.Context) {
+	resp := &protocol.Resp{Ret: 0, Msg: "", Data: ""}
 	article_id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
+		loger.Default().Info(this.getLogTitle(), "Delete-error1:", err.Error())
 		resp.Ret = -1
 		resp.Msg = "参数错误"
 		c.JSON(http.StatusOK, resp)
 		return
 	}
 	article_serv := admin.Articles{}
-	res, _ := article_serv.Delete(article_id)
-	if !res {
-		resp.Ret = -1
-		resp.Msg = "删除失败"
-		c.JSON(http.StatusOK, resp)
-		return
-	}
+	resp = article_serv.Delete(article_id)
 	c.JSON(http.StatusOK, resp)
 }
 
 //更新文章
-func (Articles) Update(c *gin.Context) {
+func (this *Articles) Update(c *gin.Context) {
 	resp := &protocol.Resp{Ret: -1, Msg: "", Data: ""}
 	article_id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
+		loger.Default().Info(this.getLogTitle(), "Update-error1:", err.Error())
 		resp.Ret = -1
 		resp.Msg = "参数错误"
 		c.JSON(http.StatusOK, resp)
 		return
 	}
-	data, err := ioutil.ReadAll(c.Request.Body)
+	var addParams AddParams
+	err = c.ShouldBindJSON(&addParams)
+	jsonstr, _ := json.Marshal(addParams)
+	loger.Default().Info("Articles-Update-Params:", jsonstr)
 	if err != nil {
+		loger.Default().Info(this.getLogTitle(), "Update-error2:", err.Error())
 		resp.Ret = -1
-		resp.Msg = "参数错误1"
-		c.JSON(http.StatusOK, resp)
-		return
-	}
-	addParams := &AddParams{}
-	err = json.Unmarshal(data, addParams)
-	if err != nil {
-		resp.Ret = -1
-		resp.Msg = "参数错误2" + err.Error()
+		resp.Msg = "参数错误"
 		c.JSON(http.StatusOK, resp)
 		return
 	}
@@ -196,23 +181,17 @@ func (Articles) Update(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
-func (Articles) Show(c *gin.Context) {
-	resp := protocol.Resp{Ret: 0, Msg: "", Data: ""}
+func (this *Articles) Show(c *gin.Context) {
+	resp := &protocol.Resp{Ret: 0, Msg: "", Data: ""}
 	article_id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
+		loger.Default().Info(this.getLogTitle(), "Show-error1:", err.Error())
 		resp.Ret = -1
 		resp.Msg = "参数错误"
 		c.JSON(http.StatusOK, resp)
 		return
 	}
 	article_serv := admin.Articles{}
-	res, err := article_serv.Detail(article_id)
-	if err != nil {
-		resp.Ret = -1
-		resp.Msg = "获取详情失败"
-		c.JSON(http.StatusOK, resp)
-		return
-	}
-	resp.Data = res
+	resp = article_serv.Detail(article_id)
 	c.JSON(http.StatusOK, resp)
 }

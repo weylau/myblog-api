@@ -15,6 +15,7 @@ type SysConfig struct {
 	JwtSecret      string `ini:"jwt_secret"`
 	JwtExprTime    int64  `ini:"jwt_expr_time"`
 	LogDir         string `ini:"log_dir"`
+	LogLevel       string `ini:"log_level"`
 	GaSecret       string `ini:"ga_secret"`
 	EsHost         string `ini:"es_host"`
 }
@@ -22,7 +23,7 @@ type SysConfig struct {
 var Configs *SysConfig = &SysConfig{}
 
 //加载系统配置文件
-func SetUp(configFileName string) {
+func Default(configFileName string) {
 	config := &SysConfig{}
 	conf, err := ini.Load(configFileName) //加载配置文件
 	if err != nil {

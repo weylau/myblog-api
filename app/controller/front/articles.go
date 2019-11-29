@@ -13,7 +13,7 @@ type Articles struct {
 
 //文章列表
 func (Articles) GetList(c *gin.Context) {
-	resp := protocol.Resp{Ret: 0, Msg: "", Data: ""}
+	resp := &protocol.Resp{Ret: 0, Msg: "", Data: ""}
 	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
 	if err != nil {
 		page = 1
@@ -27,14 +27,7 @@ func (Articles) GetList(c *gin.Context) {
 		cate_id = 0
 	}
 	article_serv := front.Articles{}
-	article_list, err := article_serv.GetListForEs(page, page_size, cate_id, []string{"article_id", "cate_id", "title", "description", "modify_time"})
-	if err != nil {
-		resp.Ret = -1
-		resp.Msg = "系统错误"
-		c.JSON(http.StatusOK, resp)
-		return
-	}
-	resp.Data = article_list
+	resp = article_serv.GetListForEs(page, page_size, cate_id, []string{"article_id", "cate_id", "title", "description", "modify_time"})
 	c.JSON(http.StatusOK, resp)
 }
 
@@ -56,8 +49,8 @@ func (Articles) Show(c *gin.Context) {
 
 //文章类型
 func (Articles) GetCategories(c *gin.Context) {
-	resp := protocol.Resp{Ret: 0, Msg: "", Data: ""}
+	resp := &protocol.Resp{Ret: 0, Msg: "", Data: ""}
 	article_serv := front.Articles{}
-	resp.Data = article_serv.GetArticleCate()
+	resp = article_serv.GetArticleCate()
 	c.JSON(http.StatusOK, resp)
 }

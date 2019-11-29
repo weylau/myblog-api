@@ -4,21 +4,15 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"myblog-api/app/config"
+	"myblog-api/app/helper"
 	"myblog-api/app/router"
 	"os"
-	"os/exec"
-	"path/filepath"
 )
 
 func init() {
-	var err error
-	appDir, err := os.Getwd()
-	if err != nil {
-		file, _ := exec.LookPath(os.Args[0])
-		applicationPath, _ := filepath.Abs(file)
-		appDir, _ = filepath.Split(applicationPath)
-	}
-	config.SetUp(appDir + "/config.ini")
+	appDir := helper.GetAppDir()
+	config.Default(appDir + "/config.ini")
+
 }
 
 func main() {

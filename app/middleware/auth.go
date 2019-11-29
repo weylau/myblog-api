@@ -14,7 +14,7 @@ import (
 
 func CheckAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		resp := protocol.Resp{Ret: -1, Msg: "", Data: ""}
+		resp := protocol.Resp{Ret: -1, Msg: "1", Data: ""}
 		authorization := c.Request.Header.Get("Authorization")
 		if authorization == "" {
 			resp.Ret = 601
@@ -89,7 +89,6 @@ func Cors() gin.HandlerFunc {
 		} else {
 			headerStr = "access-control-allow-origin, access-control-allow-headers"
 		}
-		fmt.Println("method", method)
 		if origin != "" {
 			//c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 			c.Header("Access-Control-Allow-Origin", "*")                                       // 这是允许访问所有域

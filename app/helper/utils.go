@@ -7,6 +7,9 @@ import (
 	"encoding/base32"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
+	"os"
+	"os/exec"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"time"
@@ -156,4 +159,14 @@ func DateToDateTime(date string) string {
 	stamp, _ := time.ParseInLocation(timeTemplate, date, time.Local)
 	return time.Unix(stamp.Unix(), 0).Format(toTemplate)
 
+}
+
+func GetAppDir() string {
+	appDir, err := os.Getwd()
+	if err != nil {
+		file, _ := exec.LookPath(os.Args[0])
+		applicationPath, _ := filepath.Abs(file)
+		appDir, _ = filepath.Split(applicationPath)
+	}
+	return appDir
 }

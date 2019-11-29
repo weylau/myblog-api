@@ -2,6 +2,7 @@ package admin
 
 import (
 	"myblog-api/app/db/mysql"
+	"myblog-api/app/loger"
 	"myblog-api/app/model"
 	"myblog-api/app/protocol"
 	"time"
@@ -37,13 +38,17 @@ type Detail struct {
 type Articles struct {
 }
 
+func (*Articles) getLogTitle() string {
+	return "service-admin-articles-"
+}
+
 type ArticleList struct {
 	Total    int              `json:"total"`
 	Datalist []model.Articles `json:"datalist"`
 }
 
 //添加文章
-func (Articles) Add(params *ArticleParams) (resp *protocol.Resp) {
+func (this *Articles) Add(params *ArticleParams) (resp *protocol.Resp) {
 	resp = &protocol.Resp{Ret: -1, Msg: "", Data: ""}
 	articles := model.Articles{
 		CateId:      params.CateId,
@@ -74,7 +79,8 @@ func (Articles) Add(params *ArticleParams) (resp *protocol.Resp) {
 	//添加articles
 	err := db.Model(model.Articles{}).Create(&articles).Error
 	if err != nil {
-		resp.Msg = "系统错误：" + err.Error()
+		loger.Default().Error(this.getLogTitle(), "Add-error1:", err.Error())
+		resp.Msg = "系统错误"
 		tx.Rollback()
 		return resp
 	}
@@ -84,7 +90,8 @@ func (Articles) Add(params *ArticleParams) (resp *protocol.Resp) {
 	articles_contents.ArticleId = article_id[0]
 	err = db.Create(&articles_contents).Error
 	if err != nil {
-		resp.Msg = "系统错误：" + err.Error()
+		loger.Default().Error(this.getLogTitle(), "Add-error2:", err.Error())
+		resp.Msg = "系统错误"
 		tx.Rollback()
 		return resp
 	}
@@ -95,14 +102,15 @@ func (Articles) Add(params *ArticleParams) (resp *protocol.Resp) {
 }
 
 //更新文章
-func (Articles) Update(id int, params *ArticleParams) (resp *protocol.Resp) {
+func (this *Articles) Update(id int, params *ArticleParams) (resp *protocol.Resp) {
 	resp = &protocol.Resp{Ret: -1, Msg: "", Data: ""}
 	//查询ID是否存在
 	db := mysql.Default().GetConn()
 	defer db.Close()
 	count := 0
 	if err := db.Model(model.Articles{}).Where("article_id = ?", id).Count(&count).Error; err != nil {
-		resp.Msg = "系统错误：" + err.Error()
+		loger.Default().Error(this.getLogTitle(), "Update-error1:", err.Error())
+		resp.Msg = "系统错误"
 		return resp
 	}
 
@@ -135,14 +143,16 @@ func (Articles) Update(id int, params *ArticleParams) (resp *protocol.Resp) {
 	//添加articles
 	err := db.Model(model.Articles{}).Where("article_id = ?", id).Update(&articles).Error
 	if err != nil {
-		resp.Msg = "系统错误：" + err.Error()
+		loger.Default().Error(this.getLogTitle(), "Update-error2:", err.Error())
+		resp.Msg = "系统错误"
 		tx.Rollback()
 		return resp
 	}
 	//获取插入记录的Id
 	err = db.Model(model.ArticlesContents{}).Where("article_id = ?", id).Updates(&articles_contents).Error
 	if err != nil {
-		resp.Msg = "系统错误：" + err.Error()
+		loger.Default().Error(this.getLogTitle(), "Update-error3:", err.Error())
+		resp.Msg = "系统错误"
 		tx.Rollback()
 		return resp
 	}
@@ -153,7 +163,8 @@ func (Articles) Update(id int, params *ArticleParams) (resp *protocol.Resp) {
 }
 
 //分页获取文章列表
-func (Articles) GetList(page int, page_size int, cate_id int, fields []string) (*ArticleList, error) {
+func (this *Articles) GetList(page int, page_size int, cate_id int, fields []string) (resp *protocol.Resp) {
+	resp = &protocol.Resp{Ret: -1, Msg: "1", Data: ""}
 	db := mysql.Default().GetConn()
 	defer db.Close()
 	offset := (page - 1) * page_size
@@ -164,34 +175,49 @@ func (Articles) GetList(page int, page_size int, cate_id int, fields []string) (
 		db = db.Where("cate_id = ?", cate_id)
 	}
 	db.Model(&model.Articles{}).Count(&total)
-	db.Select(fields).Offset(offset).Limit(page_size).Order("article_id desc").Find(&articles)
+	if err := db.Select(fields).Offset(offset).Limit(page_size).Order("article_id desc").Find(&articles).Error; err != nil {
+		loger.Default().Error(this.getLogTitle(), "GetList-error1:", err.Error())
+		resp.Msg = "系统错误"
+		return resp
+	}
 	article_list.Datalist = articles
 	article_list.Total = total
-	return article_list, nil
+	resp.Ret = 0
+	resp.Data = article_list
+	return resp
 }
 
 //删除文章
-func (Articles) Delete(id int) (bool, error) {
+func (this *Articles) Delete(id int) (resp *protocol.Resp) {
+	resp = &protocol.Resp{Ret: -1, Msg: "", Data: ""}
 	db := mysql.Default().GetConn()
 	defer db.Close()
 	if err := db.Where("article_id = ?", id).Delete(&model.Articles{}).Error; err != nil {
-		return false, err
+		loger.Default().Error(this.getLogTitle(), "Delete-error:", err.Error())
+		resp.Msg = "系统错误"
+		return resp
 	}
-	return true, nil
+	resp.Ret = 0
+	return resp
 }
 
 //文章详情
-func (Articles) Detail(id int) (*Detail, error) {
+func (this *Articles) Detail(id int) (resp *protocol.Resp) {
+	resp = &protocol.Resp{Ret: -1, Msg: "", Data: ""}
 	db := mysql.Default().GetConn()
 	defer db.Close()
 	article := &model.Articles{}
 	article_content := &model.ArticlesContents{}
 
 	if err := db.Where("article_id = ?", id).Find(article).Error; err != nil {
-		return nil, err
+		loger.Default().Error(this.getLogTitle(), "Detail-error1:", err.Error())
+		resp.Msg = "系统错误"
+		return resp
 	}
 	if err := db.Where("article_id = ?", id).Find(article_content).Error; err != nil {
-		return nil, err
+		loger.Default().Error(this.getLogTitle(), "Detail-error2:", err.Error())
+		resp.Msg = "系统错误"
+		return resp
 	}
 	detail := &Detail{}
 	detail.Title = article.Title
@@ -204,6 +230,7 @@ func (Articles) Detail(id int) (*Detail, error) {
 	detail.PublishTime = article.ModifyTime
 	detail.Contents = article_content.Contents
 	detail.ShowType = article_content.ShowType
-
-	return detail, nil
+	resp.Data = detail
+	resp.Ret = 0
+	return resp
 }

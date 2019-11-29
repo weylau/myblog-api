@@ -1,10 +1,8 @@
 package admin
 
 import (
-	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
-	"io/ioutil"
+	"myblog-api/app/loger"
 	"myblog-api/app/protocol"
 	"myblog-api/app/service/admin"
 	"myblog-api/app/validate"
@@ -22,22 +20,19 @@ type LoginParams struct {
 	Code     string `json:"code" validate:"len=6"`
 }
 
+func (*Login) getLogTitle() string {
+	return "ctrller-admin-login-"
+}
+
 //登录
-func (Login) Login(c *gin.Context) {
+func (this *Login) Login(c *gin.Context) {
 	resp := protocol.Resp{Ret: 0, Msg: "", Data: ""}
-	data, err := ioutil.ReadAll(c.Request.Body)
-	fmt.Println(11111111)
+	var loginParams LoginParams
+	err := c.ShouldBindJSON(&loginParams)
 	if err != nil {
+		loger.Default().Error(this.getLogTitle(), "Login-error1:", err.Error())
 		resp.Ret = -1
 		resp.Msg = "用户名或密码不能为空1"
-		c.JSON(http.StatusOK, resp)
-		return
-	}
-	loginParams := &LoginParams{}
-	err = json.Unmarshal(data, loginParams)
-	if err != nil {
-		resp.Ret = -1
-		resp.Msg = "用户名或密码不能为空2" + err.Error()
 		c.JSON(http.StatusOK, resp)
 		return
 	}
@@ -45,8 +40,9 @@ func (Login) Login(c *gin.Context) {
 	password := loginParams.Password
 	code, err := strconv.Atoi(loginParams.Code)
 	if err != nil {
+		loger.Default().Error(this.getLogTitle(), "Login-error2:", err.Error())
 		resp.Ret = -1
-		resp.Msg = "谷歌验证码错误：" + err.Error()
+		resp.Msg = "谷歌验证码错误"
 		c.JSON(http.StatusOK, resp)
 		return
 	}
