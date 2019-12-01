@@ -3,21 +3,23 @@ package config
 import "gopkg.in/ini.v1"
 
 type SysConfig struct {
-	Env            string `ini:"env"`
-	DBDriver       string `ini:"db_driver"`
-	DBHost         string `ini:"db_host"`
-	DBPort         string `ini:"db_port"`
-	DBUser         string `ini:"db_user"`
-	DBPass         string `ini:"db_pass"`
-	DBName         string `ini:"db_name"`
-	DBDebug        bool   `ini:"db_debug"`
-	HttpListenPort string `ini:"http_listen_port"`
-	JwtSecret      string `ini:"jwt_secret"`
-	JwtExprTime    int64  `ini:"jwt_expr_time"`
-	LogDir         string `ini:"log_dir"`
-	LogLevel       string `ini:"log_level"`
-	GaSecret       string `ini:"ga_secret"`
-	EsHost         string `ini:"es_host"`
+	Env              string `ini:"env"`
+	DBDriver         string `ini:"db_driver"`
+	DBHost           string `ini:"db_host"`
+	DBPort           string `ini:"db_port"`
+	DBUser           string `ini:"db_user"`
+	DBPass           string `ini:"db_pass"`
+	DBName           string `ini:"db_name"`
+	DBDebug          bool   `ini:"db_debug"`
+	HttpListenPort   string `ini:"http_listen_port"`
+	JwtSecret        string `ini:"jwt_secret"`
+	JwtExprTime      int64  `ini:"jwt_expr_time"`
+	LogDir           string `ini:"log_dir"`
+	LogLevel         string `ini:"log_level"`
+	GaSecret         string `ini:"ga_secret"`
+	EsHost           string `ini:"es_host"`
+	MongoHost        string `ini:"mongo_host"`
+	MongoConnTimeout int64  `ini:"mongo_conn_timeout"`
 }
 
 var Configs *SysConfig = &SysConfig{}
