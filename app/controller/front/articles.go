@@ -33,7 +33,7 @@ func (Articles) GetList(c *gin.Context) {
 
 //文章详情
 func (Articles) Show(c *gin.Context) {
-	resp := protocol.Resp{Ret: 0, Msg: "", Data: ""}
+	resp := &protocol.Resp{Ret: -1, Msg: "", Data: ""}
 	id, err := strconv.Atoi(c.Param("id"))
 	article_serv := front.Articles{}
 	if err != nil || id <= 0 {
@@ -42,8 +42,7 @@ func (Articles) Show(c *gin.Context) {
 		c.JSON(http.StatusOK, resp)
 		return
 	}
-	resp.Data = article_serv.GetArticleDetail(id)
-
+	resp = article_serv.GetArticleDetail(id)
 	c.JSON(http.StatusOK, resp)
 }
 

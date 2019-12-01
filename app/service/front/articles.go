@@ -78,6 +78,8 @@ func (this *Articles) GetListForEs(page int, page_size int, cate_id int, fields 
 		articles = append(articles, t)
 
 	}
+	resp.Ret = 0
+	resp.Data = articles
 	return resp
 }
 
@@ -102,6 +104,7 @@ func (this *Articles) GetArticleDetail(article_id int) (resp *protocol.Resp) {
 		resp.Msg = "系统错误"
 		return resp
 	}
+	resp.Ret = 0
 	article_details.Contents = article_content.Contents
 	article_details.ShowType = article_content.ShowType
 	resp.Data = article_details
@@ -119,6 +122,7 @@ func (this *Articles) GetArticleCate() (resp *protocol.Resp) {
 		resp.Msg = "系统错误"
 		return resp
 	}
+	resp.Ret = 0
 	resp.Data = article_cates
 	return resp
 }
