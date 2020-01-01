@@ -51,19 +51,20 @@ func (this *Articles) GetListForEs(page int, page_size int, cate_id int, fields 
 	esconn := es.Default().GetConn()
 	ctx := context.Background()
 	articles := make([]model.Articles, 0)
-	statusQuery := elastic.NewTermQuery("status", 1)
+
 	query := esconn.Search().
 		Index("myblog").
 		Type("mb_articles").
-		Query(statusQuery).
 		Size(page_size).
 		From((page-1)*page_size).
 		Sort("modify_time", false).
 		Pretty(true)
+	boolQuery := elastic.NewBoolQuery()
+	searchQuery := boolQuery.Must(elastic.NewTermQuery("status", 1))
 	if cate_id > 0 {
-		q := elastic.NewTermQuery("cate_id", cate_id)
-		query = query.Query(q)
+		searchQuery = searchQuery.Filter(elastic.NewTermQuery("cate_id", cate_id))
 	}
+	query = query.Query(searchQuery)
 	result, err := query.Do(ctx)
 	if err != nil {
 		loger.Default().Error(this.getLogTitle(), "GetListForEs-error1:", err.Error())

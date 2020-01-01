@@ -1,0 +1,7 @@
+#!/bin/bash
+echo "==============build============="
+go build -o myblog-api
+echo "==========推送到远端==========="
+scp myblog-api 远程ip:远程目录
+rm -rf myblog-api
+echo "==========结束！！！==========="
