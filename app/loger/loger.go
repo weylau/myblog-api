@@ -9,6 +9,7 @@ import (
 	"myblog-api/app/config"
 	"myblog-api/app/helper"
 	"os"
+	"time"
 )
 
 func init() {
@@ -23,9 +24,10 @@ func Default() *logrus.Logger {
 		return Loger
 	}
 	appDir := helper.GetAppDir()
+	today := time.Now().Format("2006-01-02")
 	pathMap := lfshook.PathMap{
-		logrus.InfoLevel:  appDir + "/log/info.log",
-		logrus.ErrorLevel: appDir + "/log/error.log",
+		logrus.InfoLevel:  appDir + "/log/info-" + today + ".log",
+		logrus.ErrorLevel: appDir + "/log/error-" + today + ".log",
 	}
 
 	Loger = logrus.New()
