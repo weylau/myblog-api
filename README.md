@@ -1,9 +1,12 @@
-## 安装
+# Myblog-api
+> Myblog-api是我的博客网站https://weylau.ajnote.cn的api-server 
 
-#### 1、安装 Go 并且设置好你的 Go 工作空间
 
-#### 2、启动
-```$xslt
-$ go run main.go
-```
- No newline at end of file
+## 主要技术栈
+- gin：api开发框架
+- mysql:数据存储
+- MongoDB：access日志存储
+- elasticsearch：前端列表查询
+- go-mysql-elasticsearch：MySQL同步数据elasticsearch工具
+
+## 支持docker部署
