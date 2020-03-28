@@ -8,6 +8,7 @@ import (
 	"myblog-api/app/validate"
 	"net/http"
 	"strconv"
+	"github.com/juju/errors"
 )
 
 type Login struct {
@@ -20,9 +21,6 @@ type LoginParams struct {
 	Code     string `json:"code" validate:"len=6"`
 }
 
-func (*Login) getLogTitle() string {
-	return "ctrller-admin-login-"
-}
 
 //登录
 func (this *Login) Login(c *gin.Context) {
@@ -30,7 +28,7 @@ func (this *Login) Login(c *gin.Context) {
 	var loginParams LoginParams
 	err := c.ShouldBindJSON(&loginParams)
 	if err != nil {
-		loger.Default().Error(this.getLogTitle(), "Login-error1:", err.Error())
+		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
 		resp.Ret = -1
 		resp.Msg = "用户名或密码不能为空1"
 		c.JSON(http.StatusOK, resp)
@@ -40,7 +38,7 @@ func (this *Login) Login(c *gin.Context) {
 	password := loginParams.Password
 	code, err := strconv.Atoi(loginParams.Code)
 	if err != nil {
-		loger.Default().Error(this.getLogTitle(), "Login-error2:", err.Error())
+		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
 		resp.Ret = -1
 		resp.Msg = "谷歌验证码错误"
 		c.JSON(http.StatusOK, resp)

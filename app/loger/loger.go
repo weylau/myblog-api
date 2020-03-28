@@ -16,16 +16,12 @@ func init() {
 
 var Loger *logrus.Logger
 
-func Default() *logrus.Logger {
-	if Loger != nil {
-		return Loger
-	}
+func Default() {
 	Loger = logrus.New()
 	if !config.Configs.Debug {
 		logFileWriter := &logFileWriter{}
 		Loger.SetOutput(logFileWriter)
 	}
-	return Loger
 }
 
 

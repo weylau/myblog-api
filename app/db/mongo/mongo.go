@@ -8,6 +8,8 @@ import (
 	"myblog-api/app/config"
 	"myblog-api/app/loger"
 	"time"
+	"github.com/juju/errors"
+
 )
 
 type Mongo struct {
@@ -19,13 +21,13 @@ func Default() (*Mongo, error) {
 	ctx, _ := context.WithTimeout(context.Background(), time.Duration(config.Configs.MongoConnTimeout)*time.Second)
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(config.Configs.MongoHost))
 	if err != nil {
-		loger.Default().Error("mongo conn error:", err.Error())
+		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
 		return nil, err
 	}
 	ctx, _ = context.WithTimeout(context.Background(), time.Duration(config.Configs.MongoConnTimeout)*time.Second)
 	err = client.Ping(ctx, readpref.Primary())
 	if err != nil {
-		loger.Default().Error("mongo ping error:", err.Error())
+		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
 		return nil, err
 	}
 	mg.conn = client

@@ -6,6 +6,7 @@ import (
 	"myblog-api/app/model"
 	"myblog-api/app/protocol"
 	"time"
+	"github.com/juju/errors"
 )
 
 type ArticleParams struct {
@@ -38,9 +39,6 @@ type Detail struct {
 type Articles struct {
 }
 
-func (*Articles) getLogTitle() string {
-	return "service-admin-articles-"
-}
 
 type ArticleList struct {
 	Total    int              `json:"total"`
@@ -79,7 +77,7 @@ func (this *Articles) Add(params *ArticleParams) (resp *protocol.Resp) {
 	//添加articles
 	err := db.Model(model.Articles{}).Create(&articles).Error
 	if err != nil {
-		loger.Default().Error(this.getLogTitle(), "Add-error1:", err.Error())
+		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
 		resp.Msg = "系统错误"
 		tx.Rollback()
 		return resp
@@ -90,7 +88,7 @@ func (this *Articles) Add(params *ArticleParams) (resp *protocol.Resp) {
 	articles_contents.ArticleId = article_id[0]
 	err = db.Create(&articles_contents).Error
 	if err != nil {
-		loger.Default().Error(this.getLogTitle(), "Add-error2:", err.Error())
+		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
 		resp.Msg = "系统错误"
 		tx.Rollback()
 		return resp
@@ -109,7 +107,7 @@ func (this *Articles) Update(id int, params *ArticleParams) (resp *protocol.Resp
 	defer db.Close()
 	count := 0
 	if err := db.Model(model.Articles{}).Where("article_id = ?", id).Count(&count).Error; err != nil {
-		loger.Default().Error(this.getLogTitle(), "Update-error1:", err.Error())
+		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
 		resp.Msg = "系统错误"
 		return resp
 	}
@@ -143,7 +141,7 @@ func (this *Articles) Update(id int, params *ArticleParams) (resp *protocol.Resp
 	//添加articles
 	err := db.Model(model.Articles{}).Where("article_id = ?", id).Update(&articles).Error
 	if err != nil {
-		loger.Default().Error(this.getLogTitle(), "Update-error2:", err.Error())
+		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
 		resp.Msg = "系统错误"
 		tx.Rollback()
 		return resp
@@ -151,7 +149,7 @@ func (this *Articles) Update(id int, params *ArticleParams) (resp *protocol.Resp
 	//获取插入记录的Id
 	err = db.Model(model.ArticlesContents{}).Where("article_id = ?", id).Updates(&articles_contents).Error
 	if err != nil {
-		loger.Default().Error(this.getLogTitle(), "Update-error3:", err.Error())
+		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
 		resp.Msg = "系统错误"
 		tx.Rollback()
 		return resp
@@ -176,7 +174,7 @@ func (this *Articles) GetList(page int, page_size int, cate_id int, fields []str
 	}
 	db.Model(&model.Articles{}).Count(&total)
 	if err := db.Select(fields).Offset(offset).Limit(page_size).Order("article_id desc").Find(&articles).Error; err != nil {
-		loger.Default().Error(this.getLogTitle(), "GetList-error1:", err.Error())
+		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
 		resp.Msg = "系统错误"
 		return resp
 	}
@@ -193,7 +191,7 @@ func (this *Articles) Delete(id int) (resp *protocol.Resp) {
 	db := mysql.Default().GetConn()
 	defer db.Close()
 	if err := db.Where("article_id = ?", id).Delete(&model.Articles{}).Error; err != nil {
-		loger.Default().Error(this.getLogTitle(), "Delete-error:", err.Error())
+		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
 		resp.Msg = "系统错误"
 		return resp
 	}
@@ -210,12 +208,12 @@ func (this *Articles) Detail(id int) (resp *protocol.Resp) {
 	article_content := &model.ArticlesContents{}
 
 	if err := db.Where("article_id = ?", id).Find(article).Error; err != nil {
-		loger.Default().Error(this.getLogTitle(), "Detail-error1:", err.Error())
+		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
 		resp.Msg = "系统错误"
 		return resp
 	}
 	if err := db.Where("article_id = ?", id).Find(article_content).Error; err != nil {
-		loger.Default().Error(this.getLogTitle(), "Detail-error2:", err.Error())
+		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
 		resp.Msg = "系统错误"
 		return resp
 	}

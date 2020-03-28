@@ -10,14 +10,12 @@ import (
 	"myblog-api/app/model"
 	"myblog-api/app/protocol"
 	"time"
+	"github.com/juju/errors"
 )
 
 type Admins struct {
 }
 
-func (*Admins) getLogTitle() string {
-	return "service-admin-login-"
-}
 
 //用户信息
 type UserInfo struct {
@@ -33,7 +31,7 @@ func (this *Admins) Login(username string, password string, code uint32) (resp p
 	//校验谷歌验证码
 	ga_code, err := helper.MkGaCode(config.Configs.GaSecret)
 	if err != nil {
-		loger.Default().Error(this.getLogTitle(), "Login-error1:", err.Error())
+		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
 		resp.Msg = "系统错误"
 		return resp
 	}
@@ -55,9 +53,9 @@ func (this *Admins) Login(username string, password string, code uint32) (resp p
 
 	//检测密码是否正确
 	if helper.MkMd5(password) != admin.Password {
-		loger.Default().Info(this.getLogTitle(), "admin:", admin)
-		loger.Default().Info(this.getLogTitle(), "服务端密码:", admin.Password)
-		loger.Default().Info(this.getLogTitle(), "客户端密码:", helper.MkMd5(password))
+		loger.Loger.Info("admin:", admin)
+		loger.Loger.Info("服务端密码:", admin.Password)
+		loger.Loger.Info("客户端密码:", helper.MkMd5(password))
 		resp.Msg = "密码错误"
 		return resp
 	}
@@ -65,7 +63,7 @@ func (this *Admins) Login(username string, password string, code uint32) (resp p
 	//生成token
 	token, err := helper.JwtEncode(jwt.MapClaims{"admin_id": fmt.Sprintf("%d", admin.AdminId), "username": admin.Username, "expr_time": fmt.Sprintf("%d", time.Now().Unix())}, []byte(config.Configs.JwtSecret))
 	if err != nil {
-		loger.Default().Error(this.getLogTitle(), "Login-error2:", err.Error())
+		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
 		resp.Ret = -999
 		resp.Msg = "系统错误"
 		return resp

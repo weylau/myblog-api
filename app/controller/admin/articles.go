@@ -10,14 +10,14 @@ import (
 	"myblog-api/app/validate"
 	"net/http"
 	"strconv"
+	"myblog-api/app/config"
+	"myblog-api/app/db/redis"
+	"github.com/juju/errors"
 )
 
 type Articles struct {
 }
 
-func (*Articles) getLogTitle() string {
-	return "ctrller-admin-articles-"
-}
 
 type AddParams struct {
 	Title       string `json:"title" validate:"gt=4"`
@@ -37,9 +37,9 @@ func (this *Articles) Add(c *gin.Context) {
 	var addParams AddParams
 	err := c.ShouldBindJSON(&addParams)
 	jsonstr, _ := json.Marshal(addParams)
-	loger.Default().Info("Articles-Add-Params:", string(jsonstr))
+	loger.Loger.Info("Articles-Add-Params:", string(jsonstr))
 	if err != nil {
-		loger.Default().Info(this.getLogTitle(), "Add-error1:", err.Error())
+		loger.Loger.Info(errors.ErrorStack(errors.Trace(err)))
 		resp.Ret = -1
 		resp.Msg = "参数错误"
 		c.JSON(http.StatusOK, resp)
@@ -109,7 +109,7 @@ func (this *Articles) Delete(c *gin.Context) {
 	resp := &protocol.Resp{Ret: 0, Msg: "", Data: ""}
 	article_id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		loger.Default().Info(this.getLogTitle(), "Delete-error1:", err.Error())
+		loger.Loger.Info(errors.ErrorStack(errors.Trace(err)))
 		resp.Ret = -1
 		resp.Msg = "参数错误"
 		c.JSON(http.StatusOK, resp)
@@ -125,7 +125,7 @@ func (this *Articles) Update(c *gin.Context) {
 	resp := &protocol.Resp{Ret: -1, Msg: "", Data: ""}
 	article_id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		loger.Default().Info(this.getLogTitle(), "Update-error1:", err.Error())
+		loger.Loger.Info(errors.ErrorStack(errors.Trace(err)))
 		resp.Ret = -1
 		resp.Msg = "参数错误"
 		c.JSON(http.StatusOK, resp)
@@ -134,9 +134,9 @@ func (this *Articles) Update(c *gin.Context) {
 	var addParams AddParams
 	err = c.ShouldBindJSON(&addParams)
 	jsonstr, _ := json.Marshal(addParams)
-	loger.Default().Info("Articles-Update-Params:", string(jsonstr))
+	loger.Loger.Info("Articles-Update-Params:", string(jsonstr))
 	if err != nil {
-		loger.Default().Info(this.getLogTitle(), "Update-error2:", err.Error())
+		loger.Loger.Info(errors.ErrorStack(errors.Trace(err)))
 		resp.Ret = -1
 		resp.Msg = "参数错误"
 		c.JSON(http.StatusOK, resp)
@@ -185,7 +185,7 @@ func (this *Articles) Show(c *gin.Context) {
 	resp := &protocol.Resp{Ret: 0, Msg: "", Data: ""}
 	article_id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		loger.Default().Info(this.getLogTitle(), "Show-error1:", err.Error())
+		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
 		resp.Ret = -1
 		resp.Msg = "参数错误"
 		c.JSON(http.StatusOK, resp)
@@ -193,5 +193,25 @@ func (this *Articles) Show(c *gin.Context) {
 	}
 	article_serv := admin.Articles{}
 	resp = article_serv.Detail(article_id)
+	c.JSON(http.StatusOK, resp)
+}
+
+func (this *Articles) DeleteCache(c *gin.Context) {
+	resp := &protocol.Resp{Ret: 0, Msg: "", Data: ""}
+	cacheKey := "article_cates_"+config.Configs.RedisCacheVersion
+	redisConn := redis.RedisClient.Pool.Get()
+	if err := redisConn.Err(); err != nil {
+		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
+		resp.Ret = -1
+		resp.Msg = "系统错误"
+		return
+	}
+	_, err := redisConn.Do("del",cacheKey)
+	if  err != nil {
+		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
+		resp.Ret = -1
+		resp.Msg = "系统错误"
+		return
+	}
 	c.JSON(http.StatusOK, resp)
 }

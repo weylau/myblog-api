@@ -3,15 +3,20 @@ package config
 import "gopkg.in/ini.v1"
 
 type SysConfig struct {
-	Env              string `ini:"env"`
-	Debug            bool   `ini:"debug"`
-	DBDriver         string `ini:"db_driver"`
-	DBHost           string `ini:"db_host"`
-	DBPort           string `ini:"db_port"`
-	DBUser           string `ini:"db_user"`
-	DBPass           string `ini:"db_pass"`
-	DBName           string `ini:"db_name"`
-	DBDebug          bool   `ini:"db_debug"`
+	Env               string `ini:"env"`
+	Debug             bool   `ini:"debug"`
+	DBDriver          string `ini:"db_driver"`
+	DBHost            string `ini:"db_host"`
+	DBPort            string `ini:"db_port"`
+	DBUser            string `ini:"db_user"`
+	DBPass            string `ini:"db_pass"`
+	DBName            string `ini:"db_name"`
+	DBDebug           bool   `ini:"db_debug"`
+	RedisHost         string `ini:"redis_host"`
+	RedisPwd          string `ini:"redis_pwd"`
+	RedisDb           int    `ini:"redis_db"`
+	RedisCacheVersion string `ini:"redis_cache_version"`
+
 	HttpListenPort   string `ini:"http_listen_port"`
 	JwtSecret        string `ini:"jwt_secret"`
 	JwtExprTime      int64  `ini:"jwt_expr_time"`
