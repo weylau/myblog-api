@@ -1,5 +1,5 @@
 # Myblog-api
-> Myblog-api是我的博客网站https://weylau.ajnote.cn的api-server 
+> Myblog-api是我的[博客网站](https://weylau.ajnote.cn "myblog")的api-server 
 
 
 ## 主要技术栈
