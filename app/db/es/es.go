@@ -11,21 +11,21 @@ type Es struct {
 	conn *elastic.Client
 }
 
-func Default() *Es {
+func Default() (*Es, error) {
 	es := &Es{}
 	conn, err := elastic.NewClient(elastic.SetURL(config.Configs.EsHost))
 	if err != nil {
 		loger.Default().Error("es connect error:", err.Error())
-		panic(err.Error())
+		return nil,err
 	}
 	ctx := context.Background()
 	_, _, err = conn.Ping(config.Configs.EsHost).Do(ctx)
 	if err != nil {
 		loger.Default().Error("es ping error:", err.Error())
-		panic(err.Error())
+		return nil,err
 	}
 	es.conn = conn
-	return es
+	return es, nil
 }
 
 func (this *Es) GetConn() *elastic.Client {

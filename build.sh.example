@@ -1,7 +1,3 @@
 #!/bin/bash
-echo "==============build============="
-go build -o myblog-api
-echo "==========推送到远端==========="
-scp myblog-api 远程ip:远程目录
-rm -rf myblog-api
-echo "==========结束！！！==========="
+docker build -t registry.cn-shenzhen.aliyuncs.com/weylau/myblog-api:latest -f Dockerfile .
+docker push registry.cn-shenzhen.aliyuncs.com/weylau/myblog-api:latest

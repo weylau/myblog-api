@@ -4,6 +4,7 @@ import "gopkg.in/ini.v1"
 
 type SysConfig struct {
 	Env              string `ini:"env"`
+	Debug            bool   `ini:"debug"`
 	DBDriver         string `ini:"db_driver"`
 	DBHost           string `ini:"db_host"`
 	DBPort           string `ini:"db_port"`

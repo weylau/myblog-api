@@ -18,7 +18,11 @@ type AccessLogParams struct {
 }
 
 func (this *AccessLog) Add(log *AccessLogParams) error {
-	mongoconn := mongo.Default().GetConn()
+	mg,err := mongo.Default()
+	if err != nil {
+		return err
+	}
+	mongoconn := mg.GetConn()
 	collection := mongoconn.Database("myblog").Collection("access_log")
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 	access_log, err := bson.Marshal(log)

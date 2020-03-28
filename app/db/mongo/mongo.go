@@ -14,22 +14,22 @@ type Mongo struct {
 	conn *mongo.Client
 }
 
-func Default() *Mongo {
+func Default() (*Mongo, error) {
 	mg := &Mongo{}
 	ctx, _ := context.WithTimeout(context.Background(), time.Duration(config.Configs.MongoConnTimeout)*time.Second)
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(config.Configs.MongoHost))
 	if err != nil {
 		loger.Default().Error("mongo conn error:", err.Error())
-		panic(err.Error())
+		return nil, err
 	}
 	ctx, _ = context.WithTimeout(context.Background(), time.Duration(config.Configs.MongoConnTimeout)*time.Second)
 	err = client.Ping(ctx, readpref.Primary())
 	if err != nil {
 		loger.Default().Error("mongo ping error:", err.Error())
-		panic(err.Error())
+		return nil, err
 	}
 	mg.conn = client
-	return mg
+	return mg,nil
 }
 
 func (this *Mongo) GetConn() *mongo.Client {

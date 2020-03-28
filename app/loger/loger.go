@@ -2,9 +2,7 @@ package loger
 
 // Package log 基础日志组件
 import (
-	"github.com/k0kubun/pp"
-	"github.com/mattn/go-isatty"
-	"github.com/rifflock/lfshook"
+	"errors"
 	"github.com/sirupsen/logrus"
 	"myblog-api/app/config"
 	"myblog-api/app/helper"
@@ -14,7 +12,6 @@ import (
 
 func init() {
 	setLevel()
-	//initPP()
 }
 
 var Loger *logrus.Logger
@@ -23,30 +20,14 @@ func Default() *logrus.Logger {
 	if Loger != nil {
 		return Loger
 	}
-	appDir := helper.GetAppDir()
-	today := time.Now().Format("2006-01-02")
-	pathMap := lfshook.PathMap{
-		logrus.InfoLevel:  appDir + "/log/info-" + today + ".log",
-		logrus.ErrorLevel: appDir + "/log/error-" + today + ".log",
-	}
-
 	Loger = logrus.New()
-
-	Loger.Hooks.Add(lfshook.NewHook(
-		pathMap,
-		&logrus.JSONFormatter{},
-	))
+	if !config.Configs.Debug {
+		logFileWriter := &logFileWriter{}
+		Loger.SetOutput(logFileWriter)
+	}
 	return Loger
 }
 
-func initPP() {
-	out := os.Stdout
-	pp.SetDefaultOutput(out)
-
-	if !isatty.IsTerminal(out.Fd()) {
-		pp.ColoringEnabled = false
-	}
-}
 
 var levels = map[string]logrus.Level{
 	"panic": logrus.PanicLevel,
@@ -71,7 +52,23 @@ func setLevel() {
 	}
 }
 
-// PP 类似 PHP 的 var_dump
-func PP(args ...interface{}) {
-	pp.Println(args...)
+
+
+type logFileWriter struct {
+}
+
+func (p *logFileWriter) Write(data []byte) (n int, err error) {
+	appDir := helper.GetAppDir()
+	today := time.Now().Format("2006-01-02")
+	logdir := appDir + "/log/log-" + today + ".log"
+	file, err := os.OpenFile(logdir, os.O_WRONLY|os.O_APPEND|os.O_CREATE|os.O_SYNC, 0600)
+	if err != nil {
+		return 0, err
+	}
+	if file == nil {
+		return 0, errors.New("file not opened")
+	}
+
+	n, e := file.Write(data)
+	return n, e
 }

@@ -1,0 +1,17 @@
+version: '3'
+
+networks:
+  default:
+    external:
+      name: myblog-network
+
+services:
+  myblog-api:
+    image: registry.cn-shenzhen.aliyuncs.com/weylau/myblog-api:latest
+    ports:
+      - 9001:9001
+    volumes:
+      - ./log:/go/src/myblog-api/log
+      - ./config.ini:/go/src/myblog-api/config.ini
+    environment:
+      - TZ=Asia/Shanghai 
