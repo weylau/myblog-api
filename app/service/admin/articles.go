@@ -5,7 +5,10 @@ import (
 	"myblog-api/app/loger"
 	"myblog-api/app/model"
 	"myblog-api/app/protocol"
+	"strconv"
 	"time"
+	"myblog-api/app/config"
+	"myblog-api/app/db/redis"
 	"github.com/juju/errors"
 )
 
@@ -102,6 +105,10 @@ func (this *Articles) Add(params *ArticleParams) (resp *protocol.Resp) {
 //更新文章
 func (this *Articles) Update(id int, params *ArticleParams) (resp *protocol.Resp) {
 	resp = &protocol.Resp{Ret: -1, Msg: "", Data: ""}
+	if err := this.deleteArticleCache(id); err != nil {
+		resp.Msg = "更新失败，请重试！"
+		return resp
+	}
 	//查询ID是否存在
 	db := mysql.Default().GetConn()
 	defer db.Close()
@@ -190,6 +197,10 @@ func (this *Articles) Delete(id int) (resp *protocol.Resp) {
 	resp = &protocol.Resp{Ret: -1, Msg: "", Data: ""}
 	db := mysql.Default().GetConn()
 	defer db.Close()
+	if err := this.deleteArticleCache(id); err != nil {
+		resp.Msg = "删除失败，请重试！"
+		return resp
+	}
 	if err := db.Where("article_id = ?", id).Delete(&model.Articles{}).Error; err != nil {
 		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
 		resp.Msg = "系统错误"
@@ -231,4 +242,19 @@ func (this *Articles) Detail(id int) (resp *protocol.Resp) {
 	resp.Data = detail
 	resp.Ret = 0
 	return resp
+}
+
+func (this *Articles) deleteArticleCache(id int) (error){
+	redisConn := redis.RedisClient.Pool.Get()
+	cacheKey := "article_"+config.Configs.RedisCacheVersion+":"+strconv.Itoa(id)
+	if err := redisConn.Err(); err != nil {
+		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
+		return err
+	}
+	_, err := redisConn.Do("del",cacheKey)
+	if  err != nil {
+		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
+		return err
+	}
+	return nil
 }

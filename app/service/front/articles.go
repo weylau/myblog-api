@@ -15,6 +15,7 @@ import (
 	"reflect"
 	red "github.com/gomodule/redigo/redis"
 	"github.com/juju/errors"
+	"strconv"
 
 	//"reflect"
 )
@@ -102,12 +103,34 @@ func (this *Articles) GetListForEs(page int, page_size int, cate_id int, fields 
 func (this *Articles) GetArticleDetail(article_id int) (resp *protocol.Resp) {
 	resp = &protocol.Resp{Ret: -1, Msg: "", Data: ""}
 	article_content := model.ArticlesContents{}
+
+	redisConn := redis.RedisClient.Pool.Get()
+	cacheKey := "article_"+config.Configs.RedisCacheVersion+":"+strconv.Itoa(article_id)
+	if err := redisConn.Err(); err != nil {
+		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
+	} else {
+		cateCache, err := red.String(redisConn.Do("GET", cacheKey))
+		if err != nil {
+			loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
+		} else {
+			if cateCache != "" {
+				article_details := ArticleDetails{}
+				err := json.Unmarshal([]byte(cateCache), &article_details)
+				if err != nil {
+					loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
+				}
+				resp.Ret = 0
+				resp.Data = article_details
+				return resp
+			}
+		}
+	}
 	article_details := ArticleDetails{}
 	db := mysql.Default().GetConn()
 	defer db.Close()
 	if err := db.Where("article_id = ?", article_id).Where("status = ?", 1).First(&article_details).Error; err != nil {
 		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
-		resp.Msg = "系统错误"
+		resp.Msg = "文章不存在"
 		return resp
 	}
 	if article_details.ArticleId <= 0 {
@@ -122,6 +145,11 @@ func (this *Articles) GetArticleDetail(article_id int) (resp *protocol.Resp) {
 	resp.Ret = 0
 	article_details.Contents = article_content.Contents
 	article_details.ShowType = article_content.ShowType
+	cacheData,err := json.Marshal(article_details)
+	if err == nil {
+		redisConn.Do("set",cacheKey, string(cacheData))
+		redisConn.Do("expire",cacheKey, 86400*3)
+	}
 	resp.Data = article_details
 	return resp
 }

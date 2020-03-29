@@ -27,9 +27,10 @@ func (Articles) GetList(c *gin.Context) {
 		cate_id = 0
 	}
 	article_serv := front.Articles{}
-	resp = article_serv.GetListForEs(page, page_size, cate_id, []string{"article_id", "cate_id", "title", "description", "modify_time"})
+	fields := []string{"article_id", "cate_id", "title", "description", "modify_time", "status"}
+	resp = article_serv.GetListForEs(page, page_size, cate_id, fields)
 	if resp.Ret == -999 {
-		resp = article_serv.GetListForMysql(page, page_size, cate_id, []string{"article_id", "cate_id", "title", "description", "modify_time"})
+		resp = article_serv.GetListForMysql(page, page_size, cate_id, fields)
 	}
 	c.JSON(http.StatusOK, resp)
 }
