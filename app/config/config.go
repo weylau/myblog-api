@@ -24,6 +24,7 @@ type SysConfig struct {
 	LogLevel         string `ini:"log_level"`
 	GaSecret         string `ini:"ga_secret"`
 	EsHost           string `ini:"es_host"`
+	EsOpen           bool `ini:"es_open"`
 	MongoHost        string `ini:"mongo_host"`
 	MongoConnTimeout int64  `ini:"mongo_conn_timeout"`
 }

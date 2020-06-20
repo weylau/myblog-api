@@ -2,6 +2,7 @@ package front
 
 import (
 	"github.com/gin-gonic/gin"
+	"myblog-api/app/config"
 	"myblog-api/app/protocol"
 	"myblog-api/app/service/front"
 	"net/http"
@@ -28,10 +29,15 @@ func (Articles) GetList(c *gin.Context) {
 	}
 	article_serv := front.Articles{}
 	fields := []string{"article_id", "cate_id", "title", "description", "modify_time", "status"}
-	resp = article_serv.GetListForEs(page, page_size, cate_id, fields)
-	if resp.Ret == -999 {
+	if config.Configs.EsOpen {
+		resp = article_serv.GetListForEs(page, page_size, cate_id, fields)
+		if resp.Ret == -999 {
+			resp = article_serv.GetListForMysql(page, page_size, cate_id, fields)
+		}
+	} else {
 		resp = article_serv.GetListForMysql(page, page_size, cate_id, fields)
 	}
+
 	c.JSON(http.StatusOK, resp)
 }
 
