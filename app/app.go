@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"myblog-api/app/controller/admin"
 	"myblog-api/app/controller/front"
+	"myblog-api/app/db/mysql"
 	"myblog-api/app/db/redis"
 	"myblog-api/app/loger"
 	"myblog-api/app/middleware"
@@ -24,6 +25,7 @@ func Default() *App {
 func (this *App) Run() {
 	loger.Default()
 	redis.Default()
+	mysql.Default()
 	this.SetAccessLog()
 	this.SetCors()
 	this.setFront()

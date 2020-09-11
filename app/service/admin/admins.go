@@ -41,8 +41,7 @@ func (this *Admins) Login(username string, password string, code uint32) (resp p
 		return resp
 	}
 
-	db := mysql.Default().GetConn()
-	defer db.Close()
+	db := mysql.MysqlDB.GetConn()
 	//查询用户
 	admin := model.Admins{}
 	db.Where("username=?", username).First(&admin)

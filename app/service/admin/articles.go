@@ -73,8 +73,7 @@ func (this *Articles) Add(params *ArticleParams) (resp *protocol.Resp) {
 	//	return resp
 	//}
 	//添加articles_contents
-	db := mysql.Default().GetConn()
-	defer db.Close()
+	db := mysql.MysqlDB.GetConn()
 	// 开始事务
 	tx := db.Begin()
 	//添加articles
@@ -110,8 +109,7 @@ func (this *Articles) Update(id int, params *ArticleParams) (resp *protocol.Resp
 		return resp
 	}
 	//查询ID是否存在
-	db := mysql.Default().GetConn()
-	defer db.Close()
+	db := mysql.MysqlDB.GetConn()
 	count := 0
 	if err := db.Model(model.Articles{}).Where("article_id = ?", id).Count(&count).Error; err != nil {
 		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
@@ -170,8 +168,7 @@ func (this *Articles) Update(id int, params *ArticleParams) (resp *protocol.Resp
 //分页获取文章列表
 func (this *Articles) GetList(page int, page_size int, cate_id int, fields []string) (resp *protocol.Resp) {
 	resp = &protocol.Resp{Ret: -1, Msg: "1", Data: ""}
-	db := mysql.Default().GetConn()
-	defer db.Close()
+	db := mysql.MysqlDB.GetConn()
 	offset := (page - 1) * page_size
 	article_list := &ArticleList{}
 	articles := make([]model.Articles, 0)
@@ -195,8 +192,7 @@ func (this *Articles) GetList(page int, page_size int, cate_id int, fields []str
 //删除文章
 func (this *Articles) Delete(id int) (resp *protocol.Resp) {
 	resp = &protocol.Resp{Ret: -1, Msg: "", Data: ""}
-	db := mysql.Default().GetConn()
-	defer db.Close()
+	db := mysql.MysqlDB.GetConn()
 	if err := this.deleteArticleCache(id); err != nil {
 		resp.Msg = "删除失败，请重试！"
 		return resp
@@ -213,8 +209,7 @@ func (this *Articles) Delete(id int) (resp *protocol.Resp) {
 //文章详情
 func (this *Articles) Detail(id int) (resp *protocol.Resp) {
 	resp = &protocol.Resp{Ret: -1, Msg: "", Data: ""}
-	db := mysql.Default().GetConn()
-	defer db.Close()
+	db := mysql.MysqlDB.GetConn()
 	article := &model.Articles{}
 	article_content := &model.ArticlesContents{}
 

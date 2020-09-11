@@ -34,8 +34,7 @@ type Articles struct {
 //分页获取文章列表mysql
 func (this *Articles) GetListForMysql(page int, page_size int, cate_id int, fields []string) (resp *protocol.Resp) {
 	resp = &protocol.Resp{Ret: -1, Msg: "", Data: ""}
-	db := mysql.Default().GetConn()
-	defer db.Close()
+	db := mysql.MysqlDB.GetConn()
 	offset := (page - 1) * page_size
 	articles := make([]model.Articles, 0)
 	db = db.Where("status = ?", 1)
@@ -126,8 +125,7 @@ func (this *Articles) GetArticleDetail(article_id int) (resp *protocol.Resp) {
 		}
 	}
 	article_details := ArticleDetails{}
-	db := mysql.Default().GetConn()
-	defer db.Close()
+	db := mysql.MysqlDB.GetConn()
 	if err := db.Where("article_id = ?", article_id).Where("status = ?", 1).First(&article_details).Error; err != nil {
 		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
 		resp.Msg = "文章不存在"
@@ -201,8 +199,7 @@ func (this *Articles) GetArticleCate() (resp *protocol.Resp) {
 
 func (this *Articles) articleCate() ([]model.ArticlesCate, error){
 	article_cates := make([]model.ArticlesCate, 0)
-	db := mysql.Default().GetConn()
-	defer db.Close()
+	db := mysql.MysqlDB.GetConn()
 	if err := db.Order("orderby asc").Find(&article_cates).Error; err != nil {
 		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
 		return nil,err
