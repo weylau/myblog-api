@@ -253,3 +253,30 @@ func (this *Articles) deleteArticleCache(id int) (error){
 	}
 	return nil
 }
+
+
+//获取文章类型
+func (this *Articles) GetArticleCate() (resp *protocol.Resp) {
+	resp = &protocol.Resp{Ret: -1, Msg: "", Data: ""}
+
+	article_cates, err := this.articleCate();
+	if  err != nil {
+		resp.Msg = "系统错误"
+		return resp
+	}
+
+	resp.Ret = 0
+	resp.Data = article_cates
+	return resp
+}
+
+func (this *Articles) articleCate() ([]model.ArticlesCate, error){
+	article_cates := make([]model.ArticlesCate, 0)
+	db := mysql.MysqlDB.GetConn()
+	if err := db.Order("orderby asc").Find(&article_cates).Error; err != nil {
+		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
+		return nil,err
+	}
+	return article_cates,nil
+}
+

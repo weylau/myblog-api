@@ -215,3 +215,11 @@ func (this *Articles) DeleteCache(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, resp)
 }
+
+//文章类型
+func (this *Articles) GetCategories(c *gin.Context) {
+	resp := &protocol.Resp{Ret: 0, Msg: "", Data: ""}
+	article_serv := admin.Articles{}
+	resp = article_serv.GetArticleCate()
+	c.JSON(http.StatusOK, resp)
+}

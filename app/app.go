@@ -62,6 +62,7 @@ func (this *App) setAdmin() {
 		authorized.POST("/article", article_admin_ctrl.Add)
 		authorized.PUT("/article/:id", article_admin_ctrl.Update)
 		authorized.GET("/articles", article_admin_ctrl.GetList)
+		authorized.GET("/categories", article_admin_ctrl.GetCategories)
 		authorized.DELETE("/article/:id", article_admin_ctrl.Delete)
 		authorized.GET("/article/:id", article_admin_ctrl.Show)
 		authorized.POST("/article/cache", article_admin_ctrl.DeleteCache)
