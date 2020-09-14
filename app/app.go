@@ -54,6 +54,7 @@ func (this *App) setAdmin() {
 	//后台管理
 	login_admin_ctrl := admin.Login{}
 	article_admin_ctrl := admin.Articles{}
+	article_cate_admin_ctrl := admin.ArticlesCate{}
 	user_admin_ctrl := admin.User{}
 	this.engine.POST("/adapi/login", login_admin_ctrl.Login)
 	authorized := this.engine.Group("/adapi")
@@ -62,11 +63,14 @@ func (this *App) setAdmin() {
 		authorized.POST("/article", article_admin_ctrl.Add)
 		authorized.PUT("/article/:id", article_admin_ctrl.Update)
 		authorized.GET("/articles", article_admin_ctrl.GetList)
-		authorized.GET("/categories", article_admin_ctrl.GetCategories)
 		authorized.DELETE("/article/:id", article_admin_ctrl.Delete)
 		authorized.GET("/article/:id", article_admin_ctrl.Show)
-		authorized.POST("/article/cache", article_admin_ctrl.DeleteCache)
 		authorized.GET("/user", user_admin_ctrl.Show)
+		authorized.GET("/categories", article_cate_admin_ctrl.GetList)
+		authorized.POST("/categorie", article_cate_admin_ctrl.Add)
+		authorized.PUT("/categorie/:cate_id", article_cate_admin_ctrl.Update)
+		authorized.DELETE("/categorie/:cate_id", article_cate_admin_ctrl.Delete)
+		authorized.DELETE("/categories/cache", article_cate_admin_ctrl.DeleteCache)
 	}
 }
 

@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"myblog-api/app/loger"
 	"myblog-api/app/protocol"
+	"myblog-api/app/request/admin/login"
 	"myblog-api/app/service/admin"
 	"myblog-api/app/validate"
 	"net/http"
@@ -14,19 +15,11 @@ import (
 type Login struct {
 }
 
-//登录参数
-type LoginParams struct {
-	Username string `json:"username" validate:"gt=4"`
-	Password string `json:"password" validate:"gt=6"`
-	Code     string `json:"code" validate:"len=6"`
-}
-
-
 //登录
 func (this *Login) Login(c *gin.Context) {
 	resp := protocol.Resp{Ret: 0, Msg: "", Data: ""}
-	var loginParams LoginParams
-	err := c.ShouldBindJSON(&loginParams)
+	var loginRequest login.LoginRequest
+	err := c.ShouldBindJSON(&loginRequest)
 	if err != nil {
 		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
 		resp.Ret = -1
@@ -34,9 +27,9 @@ func (this *Login) Login(c *gin.Context) {
 		c.JSON(http.StatusOK, resp)
 		return
 	}
-	username := loginParams.Username
-	password := loginParams.Password
-	code, err := strconv.Atoi(loginParams.Code)
+	username := loginRequest.Username
+	password := loginRequest.Password
+	code, err := strconv.Atoi(loginRequest.Code)
 	if err != nil {
 		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
 		resp.Ret = -1
@@ -45,15 +38,15 @@ func (this *Login) Login(c *gin.Context) {
 		return
 	}
 
-	admin_serv := admin.Admins{}
+	serv := admin.Admins{}
 	validator, _ := validate.Default()
-	if check := validator.CheckStruct(loginParams); !check {
+	if check := validator.CheckStruct(loginRequest); !check {
 		resp.Ret = -1
 		resp.Msg = validator.GetOneError()
 		c.JSON(http.StatusOK, resp)
 		return
 	}
 
-	resp = admin_serv.Login(username, password, uint32(code))
+	resp = serv.Login(username, password, uint32(code))
 	c.JSON(http.StatusOK, resp)
 }

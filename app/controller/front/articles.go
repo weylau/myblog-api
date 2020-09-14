@@ -27,15 +27,15 @@ func (Articles) GetList(c *gin.Context) {
 	if err != nil {
 		cate_id = 0
 	}
-	article_serv := front.Articles{}
+	serv := front.Articles{}
 	fields := []string{"article_id", "cate_id", "title", "description", "modify_time", "status"}
 	if config.Configs.EsOpen {
-		resp = article_serv.GetListForEs(page, page_size, cate_id, fields)
+		resp = serv.GetListForEs(page, page_size, cate_id, fields)
 		if resp.Ret == -999 {
-			resp = article_serv.GetListForMysql(page, page_size, cate_id, fields)
+			resp = serv.GetListForMysql(page, page_size, cate_id, fields)
 		}
 	} else {
-		resp = article_serv.GetListForMysql(page, page_size, cate_id, fields)
+		resp = serv.GetListForMysql(page, page_size, cate_id, fields)
 	}
 
 	c.JSON(http.StatusOK, resp)
@@ -45,21 +45,21 @@ func (Articles) GetList(c *gin.Context) {
 func (Articles) Show(c *gin.Context) {
 	resp := &protocol.Resp{Ret: -1, Msg: "", Data: ""}
 	id, err := strconv.Atoi(c.Param("id"))
-	article_serv := front.Articles{}
+	serv := front.Articles{}
 	if err != nil || id <= 0 {
 		resp.Ret = -1
 		resp.Msg = "参数错误"
 		c.JSON(http.StatusOK, resp)
 		return
 	}
-	resp = article_serv.GetArticleDetail(id)
+	resp = serv.GetArticleDetail(id)
 	c.JSON(http.StatusOK, resp)
 }
 
 //文章类型
 func (Articles) GetCategories(c *gin.Context) {
 	resp := &protocol.Resp{Ret: 0, Msg: "", Data: ""}
-	article_serv := front.Articles{}
-	resp = article_serv.GetArticleCate()
+	serv := front.Articles{}
+	resp = serv.GetArticleCate()
 	c.JSON(http.StatusOK, resp)
 }

@@ -1,30 +1,17 @@
 package admin
 
 import (
+	"github.com/juju/errors"
+	"myblog-api/app/config"
 	"myblog-api/app/db/mysql"
+	"myblog-api/app/db/redis"
 	"myblog-api/app/loger"
 	"myblog-api/app/model"
 	"myblog-api/app/protocol"
+	"myblog-api/app/request/admin/articles"
 	"strconv"
 	"time"
-	"myblog-api/app/config"
-	"myblog-api/app/db/redis"
-	"github.com/juju/errors"
 )
-
-type ArticleParams struct {
-	CateId      int    `json:"cate_id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Keywords    string `json:"keywords"`
-	ImgPath     string `json:"img_path"`
-	OpId        int    `json:"op_id"`
-	OpUser      string `json:"op_user"`
-	Contents    string `json:"contents"`
-	ShowType    int    `json:"show_type"`
-	PublishTime string `json:"publish_time"`
-	Status      int    `json:"status"`
-}
 
 type Detail struct {
 	Id          int    `json:"id"`
@@ -42,14 +29,13 @@ type Detail struct {
 type Articles struct {
 }
 
-
 type ArticleList struct {
 	Total    int              `json:"total"`
 	Datalist []model.Articles `json:"datalist"`
 }
 
 //添加文章
-func (this *Articles) Add(params *ArticleParams) (resp *protocol.Resp) {
+func (this *Articles) Add(params *articles.AddRequest) (resp *protocol.Resp) {
 	resp = &protocol.Resp{Ret: -1, Msg: "", Data: ""}
 	articles := model.Articles{
 		CateId:      params.CateId,
@@ -102,7 +88,7 @@ func (this *Articles) Add(params *ArticleParams) (resp *protocol.Resp) {
 }
 
 //更新文章
-func (this *Articles) Update(id int, params *ArticleParams) (resp *protocol.Resp) {
+func (this *Articles) Update(id int, params *articles.UpdateRequest) (resp *protocol.Resp) {
 	resp = &protocol.Resp{Ret: -1, Msg: "", Data: ""}
 	if err := this.deleteArticleCache(id); err != nil {
 		resp.Msg = "更新失败，请重试！"
@@ -239,44 +225,18 @@ func (this *Articles) Detail(id int) (resp *protocol.Resp) {
 	return resp
 }
 
-func (this *Articles) deleteArticleCache(id int) (error){
+func (this *Articles) deleteArticleCache(id int) (error) {
 	redisConn := redis.RedisClient.Pool.Get()
-	cacheKey := "article_"+config.Configs.RedisCacheVersion+":"+strconv.Itoa(id)
+	cacheKey := "article_" + config.Configs.RedisCacheVersion + ":" + strconv.Itoa(id)
 	if err := redisConn.Err(); err != nil {
 		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
 		return err
 	}
-	_, err := redisConn.Do("del",cacheKey)
-	if  err != nil {
+	_, err := redisConn.Do("del", cacheKey)
+	if err != nil {
 		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
 		return err
 	}
 	return nil
-}
-
-
-//获取文章类型
-func (this *Articles) GetArticleCate() (resp *protocol.Resp) {
-	resp = &protocol.Resp{Ret: -1, Msg: "", Data: ""}
-
-	article_cates, err := this.articleCate();
-	if  err != nil {
-		resp.Msg = "系统错误"
-		return resp
-	}
-
-	resp.Ret = 0
-	resp.Data = article_cates
-	return resp
-}
-
-func (this *Articles) articleCate() ([]model.ArticlesCate, error){
-	article_cates := make([]model.ArticlesCate, 0)
-	db := mysql.MysqlDB.GetConn()
-	if err := db.Order("orderby asc").Find(&article_cates).Error; err != nil {
-		loger.Loger.Error(errors.ErrorStack(errors.Trace(err)))
-		return nil,err
-	}
-	return article_cates,nil
 }
 
