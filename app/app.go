@@ -44,33 +44,33 @@ func (this *App) SetCors() {
 }
 
 func (this *App) setFront() {
-	article_front_ctrl := front.Articles{}
-	this.engine.GET("/articles", article_front_ctrl.GetList)
-	this.engine.GET("/categories", article_front_ctrl.GetCategories)
-	this.engine.GET("/article/:id", article_front_ctrl.Show)
+	article_ctrl := front.Articles{}
+	this.engine.GET("/articles", article_ctrl.GetList)
+	this.engine.GET("/categories", article_ctrl.GetCategories)
+	this.engine.GET("/article/:id", article_ctrl.Show)
 }
 
 func (this *App) setAdmin() {
 	//后台管理
-	login_admin_ctrl := admin.Login{}
-	article_admin_ctrl := admin.Articles{}
-	article_cate_admin_ctrl := admin.ArticlesCate{}
+	login_ctrl := admin.Login{}
+	article_ctrl := admin.Articles{}
+	article_cate_ctrl := admin.ArticlesCate{}
 	user_admin_ctrl := admin.User{}
-	this.engine.POST("/adapi/login", login_admin_ctrl.Login)
+	this.engine.POST("/adapi/login", login_ctrl.Login)
 	authorized := this.engine.Group("/adapi")
 	authorized.Use(middleware.CheckAuth())
 	{
-		authorized.POST("/article", article_admin_ctrl.Add)
-		authorized.PUT("/article/:id", article_admin_ctrl.Update)
-		authorized.GET("/articles", article_admin_ctrl.GetList)
-		authorized.DELETE("/article/:id", article_admin_ctrl.Delete)
-		authorized.GET("/article/:id", article_admin_ctrl.Show)
+		authorized.POST("/article", article_ctrl.Add)
+		authorized.PUT("/article/:id", article_ctrl.Update)
+		authorized.GET("/articles", article_ctrl.GetList)
+		authorized.DELETE("/article/:id", article_ctrl.Delete)
+		authorized.GET("/article/:id", article_ctrl.Show)
 		authorized.GET("/user", user_admin_ctrl.Show)
-		authorized.GET("/categories", article_cate_admin_ctrl.GetList)
-		authorized.POST("/categorie", article_cate_admin_ctrl.Add)
-		authorized.PUT("/categorie/:cate_id", article_cate_admin_ctrl.Update)
-		authorized.DELETE("/categorie/:cate_id", article_cate_admin_ctrl.Delete)
-		authorized.DELETE("/categories/cache", article_cate_admin_ctrl.DeleteCache)
+		authorized.GET("/categories", article_cate_ctrl.GetList)
+		authorized.POST("/categorie", article_cate_ctrl.Add)
+		authorized.PUT("/categorie/:cate_id", article_cate_ctrl.Update)
+		authorized.DELETE("/categorie/:cate_id", article_cate_ctrl.Delete)
+		authorized.DELETE("/categories/cache", article_cate_ctrl.DeleteCache)
 	}
 }
 
